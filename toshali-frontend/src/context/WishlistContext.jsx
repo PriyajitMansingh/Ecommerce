@@ -4,8 +4,8 @@ import toast from 'react-hot-toast'
 const WishlistContext = createContext(null)
 
 const getApiBaseUrl = () => {
-  const envBase = import.meta?.env?.VITE_API_URL || import.meta?.env?.REACT_APP_API_URL
-  return envBase ? `${envBase.replace(/\/$/, '')}/wishlist` : 'http://localhost:5000/api/wishlist'
+  const envBase = import.meta.env.VITE_API_URL  || import.meta?.env?.REACT_APP_API_URL
+  return envBase ? `${envBase.replace(/\/$/, '')}/wishlist` :import.meta.env.VITE_API_URL 
 }
 
 const API_BASE_URL = getApiBaseUrl()
