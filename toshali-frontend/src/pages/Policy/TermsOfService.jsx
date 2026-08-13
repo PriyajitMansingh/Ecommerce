@@ -1,33 +1,28 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowLeft, Shield, Package, CreditCard, Truck, FileText, Mail, Phone, MessageCircle } from 'lucide-react'
-
-const Section = ({ number, title, children, icon: Icon }) => (
-  <div className="border-b border-[#3d2a1a]/8 py-8 last:border-b-0 transition-all duration-300 hover:bg-[#FBF9F2]/50 rounded-lg px-4 -mx-4">
-    <div className="flex items-start gap-4 mb-4">
-      {Icon && (
-        <div className="w-10 h-10 rounded-full bg-[#B8860B]/10 flex items-center justify-center flex-shrink-0 mt-1">
-          <Icon className="w-5 h-5 text-[#B8860B]" />
-        </div>
-      )}
-      <div className="flex-1">
-        <h2 className="font-serif text-xl text-[#3d2a1a] mb-3 flex items-center gap-2">
-          <span className="text-[#B8860B] font-semibold">{number}.</span>
-          {title}
-        </h2>
-        <div className="text-sm text-[#6b5940] leading-relaxed space-y-3">{children}</div>
-      </div>
-    </div>
-  </div>
-)
+import Navbar from '../../components/layout/Navbar'
 
 const TermsOfService = () => {
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [])
+
+  const scrollToSection = (id) => {
+    const element = document.getElementById(id)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
-    <div className="bg-[#FBF9F2] min-h-screen">
+    <div className="bg-[#FBF9F2] min-h-screen font-sans">
+      <Navbar />
+
       {/* Hero Section */}
       <div className="relative bg-gradient-to-br from-[#3d2a1a] via-[#4a3520] to-[#3d2a1a] overflow-hidden">
         {/* Decorative Background Pattern */}
@@ -40,299 +35,358 @@ const TermsOfService = () => {
           />
         </div>
 
-        <div className="relative px-6 md:px-12 py-16 md:py-24">
-          <div className="max-w-3xl mx-auto">
-            {/* Breadcrumb */}
-            <nav className="flex items-center gap-2 text-xs text-[#B8860B]/80 mb-6 animate-fadeIn">
-              <Link 
-                to="/" 
-                className="hover:text-[#B8860B] transition-all duration-300 flex items-center gap-1 group"
-              >
-                <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />
-                <span>Home</span>
-              </Link>
-              <span className="text-[#B8860B]/40">/</span>
-              <span className="text-white/90 font-medium">Terms of Service</span>
-            </nav>
+        <div className="relative px-6 md:px-12 py-16 md:py-24 max-w-7xl mx-auto">
+          {/* Breadcrumb */}
+          <nav className="flex items-center gap-2 text-xs text-[#B8860B]/80 mb-6">
+            <Link 
+              to="/" 
+              className="hover:text-[#B8860B] transition-all duration-300 flex items-center gap-1 group text-[#B8860B]"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
+              <span>Home</span>
+            </Link>
+            <span className="text-white/40">/</span>
+            <span className="text-white/90 font-medium">Terms of Service</span>
+          </nav>
 
-            {/* Title */}
-            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-white mb-4 tracking-tight leading-tight">
-              Terms of Service
-            </h1>
-            <p className="text-lg text-[#B8860B]/90 font-light max-w-2xl">
-              Please read these terms carefully before using our services
-            </p>
+          <p className="font-mono text-xs uppercase tracking-widest text-[#B8860B] mb-3">
+            Legal · General guidelines
+          </p>
+          <h1 className="font-serif font-medium text-4xl md:text-5xl lg:text-6xl leading-tight tracking-tight mb-4 text-white">
+            Terms of Service
+          </h1>
+          <p className="text-lg text-[#FBF9F2]/80 max-w-2xl mb-4 font-light">
+            Please read these terms carefully before using our services. Throughout this site, 
+            the terms "we," "us," and "our" refer to House of Toshali.
+          </p>
+          <p className="font-mono text-xs text-[#B8860B] mt-4">
+            Last updated: January 2024
+          </p>
+        </div>
+      </div>
 
-            {/* Quick Info Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-8">
-              {[
-                { icon: Shield, label: 'Legal Protection', color: 'bg-white/10 backdrop-blur-sm' },
-                { icon: FileText, label: 'Clear Guidelines', color: 'bg-white/10 backdrop-blur-sm' },
-                { icon: CreditCard, label: 'Payment Security', color: 'bg-white/10 backdrop-blur-sm' },
-                { icon: Package, label: 'Order Policies', color: 'bg-white/10 backdrop-blur-sm' },
-              ].map((item, index) => (
-                <div 
-                  key={index}
-                  className={`${item.color} rounded-2xl p-4 border border-white/20 hover:border-[#B8860B]/50 transition-all duration-300 group cursor-default`}
-                >
-                  <item.icon className="w-5 h-5 text-[#B8860B] mb-2 group-hover:scale-110 transition-transform" />
-                  <p className="text-xs text-white/80 font-medium">{item.label}</p>
-                </div>
-              ))}
+      {/* At-a-Glance Section */}
+      <div className="px-6 md:px-8 -mt-8 relative z-10 max-w-7xl mx-auto">
+        <div className="bg-white border border-[#3d2a1a]/10 rounded-3xl shadow-[0_8px_30px_rgba(61,42,26,0.08)] overflow-hidden">
+          <div className="px-6 py-6 sm:px-8 sm:py-8 border-b border-[#3d2a1a]/5 bg-[#FBF9F2]/40">
+            <p className="font-mono text-xs uppercase tracking-widest text-[#B8860B] mb-2">Legal snapshop</p>
+            <h2 className="font-serif text-2xl text-[#3d2a1a] font-semibold">Guidelines at a glance</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-[#3d2a1a]/5">
+            <div className="bg-white p-6 hover:bg-[#FBF9F2]/20 transition-colors">
+              <div className="flex items-center gap-2 mb-3">
+                <Shield className="w-4 h-4 text-[#B8860B]" />
+                <p className="font-mono text-xs uppercase tracking-wider text-[#6b5940]">Eligibility</p>
+              </div>
+              <p className="font-serif font-semibold text-lg text-[#3d2a1a]">18+ or Supervised</p>
+            </div>
+            <div className="bg-white p-6 hover:bg-[#FBF9F2]/20 transition-colors">
+              <div className="flex items-center gap-2 mb-3">
+                <CreditCard className="w-4 h-4 text-[#B8860B]" />
+                <p className="font-mono text-xs uppercase tracking-wider text-[#6b5940]">Payment Security</p>
+              </div>
+              <p className="font-serif font-semibold text-lg text-[#3d2a1a]">Full Encryption</p>
+            </div>
+            <div className="bg-white p-6 hover:bg-[#FBF9F2]/20 transition-colors">
+              <div className="flex items-center gap-2 mb-3">
+                <FileText className="w-4 h-4 text-[#B8860B]" />
+                <p className="font-mono text-xs uppercase tracking-wider text-[#6b5940]">Refuse Service</p>
+              </div>
+              <p className="font-serif font-semibold text-lg text-[#3d2a1a]">Rights Reserved</p>
+            </div>
+            <div className="bg-white p-6 hover:bg-[#FBF9F2]/20 transition-colors">
+              <div className="flex items-center gap-2 mb-3">
+                <Package className="w-4 h-4 text-[#B8860B]" />
+                <p className="font-mono text-xs uppercase tracking-wider text-[#6b5940]">Contact response</p>
+              </div>
+              <p className="font-serif font-semibold text-lg text-[#3d2a1a]">Quick support</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Content Section */}
-      <div className="max-w-4xl mx-auto px-6 md:px-12 py-12 md:py-16">
-        {/* Introduction Card */}
-        <div className="bg-white rounded-3xl border border-[#3d2a1a]/10 shadow-[0_8px_30px_rgba(61,42,26,0.08)] p-8 md:p-10 mb-8">
-          <div className="flex items-start gap-4 mb-6">
-            <div className="w-12 h-12 rounded-2xl bg-[#B8860B]/10 flex items-center justify-center flex-shrink-0">
-              <FileText className="w-6 h-6 text-[#B8860B]" />
-            </div>
-            <div>
-              <p className="text-sm text-[#6b5940] leading-relaxed">
-                This website is operated by <span className="font-semibold text-[#3d2a1a]">House of Toshali</span>. 
-                Throughout this site, the terms "we," "us," and "our" refer to House of Toshali. 
-                By visiting our website and/or purchasing something from us, you agree to be bound by 
-                the following Terms of Service.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 text-xs text-[#a89c8a] bg-[#FBF9F2] rounded-xl p-4">
-            <Shield className="w-4 h-4 text-[#B8860B]" />
-            <span>Last updated: January 2024</span>
-          </div>
-        </div>
-
-        {/* Terms Sections */}
-        <div className="bg-white rounded-3xl border border-[#3d2a1a]/10 shadow-[0_8px_30px_rgba(61,42,26,0.08)] p-8 md:p-10">
+      {/* Main Content Layout */}
+      <div className="px-6 md:px-8 py-16 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-12">
+          
           {/* Table of Contents */}
-          <div className="bg-gradient-to-r from-[#FBF9F2] to-white rounded-2xl p-6 mb-8 border border-[#3d2a1a]/5">
-            <h3 className="font-serif text-lg text-[#3d2a1a] mb-4">Quick Navigation</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <nav className="lg:sticky lg:top-24 self-start bg-white rounded-3xl border border-[#3d2a1a]/10 p-6 shadow-sm" aria-label="Table of contents">
+            <p className="font-mono text-xs uppercase tracking-wider text-[#B8860B] mb-4 font-semibold">
+              On this page
+            </p>
+            <ol className="list-none space-y-1">
               {[
-                'Eligibility',
-                'General Conditions',
-                'Accuracy of Information',
-                'Product Pricing',
-                'Orders & Account',
-                'Payments',
-                'Shipping & Delivery',
-                'Returns & Refunds',
-                'Prohibited Uses',
-                'Intellectual Property',
-              ].map((item, index) => (
-                <button
-                  key={index}
-                  onClick={() => {
-                    const element = document.getElementById(`section-${index + 1}`)
-                    element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                  }}
-                  className="text-left text-sm text-[#6b5940] hover:text-[#B8860B] transition-colors flex items-center gap-2 group py-1"
-                >
-                  <span className="w-1 h-1 rounded-full bg-[#B8860B]/0 group-hover:bg-[#B8860B] transition-all"></span>
-                  {item}
-                </button>
+                { id: 'eligibility', num: '01', label: 'Eligibility' },
+                { id: 'conditions', num: '02', label: 'General Conditions' },
+                { id: 'accuracy', num: '03', label: 'Accuracy of Information' },
+                { id: 'pricing', num: '04', label: 'Product Pricing' },
+                { id: 'orders', num: '05', label: 'Orders & Account' },
+                { id: 'payments', num: '06', label: 'Payments' },
+                { id: 'shipping', num: '07', label: 'Shipping & Delivery' },
+                { id: 'returns', num: '08', label: 'Returns & Refunds' },
+                { id: 'prohibited', num: '09', label: 'Prohibited Uses' },
+                { id: 'property', num: '10', label: 'Intellectual Property' },
+              ].map((item) => (
+                <li key={item.id}>
+                  <button
+                    onClick={() => scrollToSection(item.id)}
+                    className="flex gap-2.5 text-[#6b5940] text-sm py-2 px-2.5 rounded-xl hover:bg-[#FBF9F2] hover:text-[#3d2a1a] transition-all w-full text-left font-medium group"
+                  >
+                    <span className="font-mono text-[#B8860B] text-sm group-hover:scale-105 transition-transform">{item.num}</span>
+                    <span>{item.label}</span>
+                  </button>
+                </li>
               ))}
-            </div>
-          </div>
+            </ol>
+          </nav>
 
-          {/* Sections */}
-          <div id="section-1">
-            <Section number={1} title="Eligibility" icon={Shield}>
-              <p>
-                By using this site, you confirm that you are able to enter into
-                legally binding contracts under applicable Indian law. If you are a
-                minor (under 18 years of age but at least 13), you may use this site
-                only under the supervision of a parent or legal guardian who agrees to
-                be bound by these Terms.
+          {/* Content Sections */}
+          <main className="space-y-8">
+            
+            {/* Section 01 */}
+            <section id="eligibility" className="bg-white rounded-3xl border border-[#3d2a1a]/10 p-8 shadow-sm transition-all duration-300 hover:shadow-md">
+              <div className="flex items-center gap-3.5 mb-5 border-b border-[#3d2a1a]/5 pb-4">
+                <span className="font-mono text-[#B8860B] text-lg font-semibold">01</span>
+                <h2 className="font-serif font-medium text-2xl text-[#3d2a1a] tracking-tight">
+                  Eligibility
+                </h2>
+              </div>
+              <p className="text-[#6b5940] leading-relaxed mb-4">
+                By using this site, you confirm that you are able to enter into legally binding contracts under 
+                applicable Indian law. If you are a minor (under 18 years of age but at least 13), you may use 
+                this site only under the supervision of a parent or legal guardian who agrees to be bound by these Terms.
               </p>
-              <p>
-                An account is required to place an order, so that you can view your
-                order history and manage your saved addresses.
+              <p className="text-[#6b5940] leading-relaxed">
+                An account is required to place an order, so that you can view your order history and manage your 
+                saved addresses.
               </p>
-            </Section>
-          </div>
+            </section>
 
-          <div id="section-2">
-            <Section number={2} title="General Conditions" icon={FileText}>
-              <ul className="list-disc pl-5 space-y-2">
-                <li>We reserve the right to refuse service to anyone, for any reason, at any time.</li>
-                <li>
-                  Content you submit to us (excluding payment information) may be
-                  transmitted over various networks and may be adapted to meet
-                  technical requirements. Payment information is always encrypted
-                  during transfer.
+            {/* Section 02 */}
+            <section id="conditions" className="bg-white rounded-3xl border border-[#3d2a1a]/10 p-8 shadow-sm transition-all duration-300 hover:shadow-md">
+              <div className="flex items-center gap-3.5 mb-5 border-b border-[#3d2a1a]/5 pb-4">
+                <span className="font-mono text-[#B8860B] text-lg font-semibold">02</span>
+                <h2 className="font-serif font-medium text-2xl text-[#3d2a1a] tracking-tight">
+                  General Conditions
+                </h2>
+              </div>
+              <p className="text-[#6b5940] leading-relaxed mb-4">We reserve the right to refuse service to anyone, for any reason, at any time.</p>
+              <ul className="list-none pl-1 text-[#6b5940] space-y-2.5">
+                <li className="flex items-start gap-2.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#B8860B] mt-2 flex-shrink-0" />
+                  <span>Content you submit to us (excluding payment information) may be transmitted over various networks and may be adapted to meet technical requirements. Payment information is always encrypted during transfer.</span>
                 </li>
-                <li>
-                  You agree not to reproduce, duplicate, copy, sell, or exploit any
-                  portion of our service or your access to it without our prior
-                  written permission.
-                </li>
-              </ul>
-            </Section>
-          </div>
-
-          <div id="section-3">
-            <Section number={3} title="Accuracy of Information" icon={FileText}>
-              <p>
-                We aim to keep product descriptions, pricing, and availability
-                accurate and current, but the site may occasionally contain
-                typographical errors or outdated information. We reserve the right to
-                correct such errors and to update information at any time without
-                prior notice.
-              </p>
-            </Section>
-          </div>
-
-          <div id="section-4">
-            <Section number={4} title="Product Pricing and Availability" icon={Package}>
-              <ul className="list-disc pl-5 space-y-2">
-                <li>Prices for our products are subject to change without notice.</li>
-                <li>
-                  We make every effort to display product images and descriptions
-                  accurately, but colors and packaging may appear slightly different
-                  on different screens.
-                </li>
-                <li>
-                  We reserve the right to limit the quantity of any product sold and 
-                  to discontinue any product at any time.
+                <li className="flex items-start gap-2.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#B8860B] mt-2 flex-shrink-0" />
+                  <span>You agree not to reproduce, duplicate, copy, sell, or exploit any portion of our service or your access to it without our prior written permission.</span>
                 </li>
               </ul>
-            </Section>
-          </div>
+            </section>
 
-          <div id="section-5">
-            <Section number={5} title="Orders and Account Accuracy" icon={Package}>
-              <p>
-                You agree to provide accurate, current, and complete information when
-                creating your account and placing an order — including your name,
-                contact number, and delivery address — and to keep this information
-                up to date.
+            {/* Section 03 */}
+            <section id="accuracy" className="bg-white rounded-3xl border border-[#3d2a1a]/10 p-8 shadow-sm transition-all duration-300 hover:shadow-md">
+              <div className="flex items-center gap-3.5 mb-5 border-b border-[#3d2a1a]/5 pb-4">
+                <span className="font-mono text-[#B8860B] text-lg font-semibold">03</span>
+                <h2 className="font-serif font-medium text-2xl text-[#3d2a1a] tracking-tight">
+                  Accuracy of Information
+                </h2>
+              </div>
+              <p className="text-[#6b5940] leading-relaxed">
+                We aim to keep product descriptions, pricing, and availability accurate and current, but the site 
+                may occasionally contain typographical errors or outdated information. We reserve the right to 
+                correct such errors and to update information at any time without prior notice.
               </p>
-              <p>
-                We reserve the right to refuse, limit, or cancel any order, including
-                orders that appear to contain pricing or listing errors, or orders we
-                reasonably suspect involve fraudulent activity.
-              </p>
-            </Section>
-          </div>
+            </section>
 
-          <div id="section-6">
-            <Section number={6} title="Payments" icon={CreditCard}>
-              <p>
-                All payments are processed through our payment gateway partner. We do
-                not store your full card, UPI, or banking credentials on our servers —
-                payment details are handled directly by our payment processor.
-              </p>
-              <p>
-                You are responsible for ensuring that any payment method you use
-                belongs to you and is used with proper authorization.
-              </p>
-            </Section>
-          </div>
+            {/* Section 04 */}
+            <section id="pricing" className="bg-white rounded-3xl border border-[#3d2a1a]/10 p-8 shadow-sm transition-all duration-300 hover:shadow-md">
+              <div className="flex items-center gap-3.5 mb-5 border-b border-[#3d2a1a]/5 pb-4">
+                <span className="font-mono text-[#B8860B] text-lg font-semibold">04</span>
+                <h2 className="font-serif font-medium text-2xl text-[#3d2a1a] tracking-tight">
+                  Product Pricing and Availability
+                </h2>
+              </div>
+              <ul className="list-none pl-1 text-[#6b5940] space-y-2.5">
+                <li className="flex items-start gap-2.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#B8860B] mt-2 flex-shrink-0" />
+                  <span>Prices for our products are subject to change without notice.</span>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#B8860B] mt-2 flex-shrink-0" />
+                  <span>We make every effort to display product images and descriptions accurately, but colors and packaging may appear slightly different on different screens.</span>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#B8860B] mt-2 flex-shrink-0" />
+                  <span>We reserve the right to limit the quantity of any product sold and to discontinue any product at any time.</span>
+                </li>
+              </ul>
+            </section>
 
-          <div id="section-7">
-            <Section number={7} title="Shipping and Delivery" icon={Truck}>
-              <p>
-                Estimated delivery timelines are provided for convenience and are not
-                guaranteed. Delays may occur due to courier availability, weather,
-                regional restrictions, or other circumstances outside our control.
+            {/* Section 05 */}
+            <section id="orders" className="bg-white rounded-3xl border border-[#3d2a1a]/10 p-8 shadow-sm transition-all duration-300 hover:shadow-md">
+              <div className="flex items-center gap-3.5 mb-5 border-b border-[#3d2a1a]/5 pb-4">
+                <span className="font-mono text-[#B8860B] text-lg font-semibold">05</span>
+                <h2 className="font-serif font-medium text-2xl text-[#3d2a1a] tracking-tight">
+                  Orders and Account Accuracy
+                </h2>
+              </div>
+              <p className="text-[#6b5940] leading-relaxed mb-4">
+                You agree to provide accurate, current, and complete information when creating your account and placing 
+                an order — including your name, contact number, and delivery address — and to keep this information up to date.
               </p>
-            </Section>
-          </div>
+              <p className="text-[#6b5940] leading-relaxed">
+                We reserve the right to refuse, limit, or cancel any order, including orders that appear to contain 
+                pricing or listing errors, or orders we reasonably suspect involve fraudulent activity.
+              </p>
+            </section>
 
-          <div id="section-8">
-            <Section number={8} title="Returns and Refunds" icon={Package}>
-              <p>
+            {/* Section 06 */}
+            <section id="payments" className="bg-white rounded-3xl border border-[#3d2a1a]/10 p-8 shadow-sm transition-all duration-300 hover:shadow-md">
+              <div className="flex items-center gap-3.5 mb-5 border-b border-[#3d2a1a]/5 pb-4">
+                <span className="font-mono text-[#B8860B] text-lg font-semibold">06</span>
+                <h2 className="font-serif font-medium text-2xl text-[#3d2a1a] tracking-tight">
+                  Payments
+                </h2>
+              </div>
+              <p className="text-[#6b5940] leading-relaxed mb-4">
+                All payments are processed through our payment gateway partner. We do not store your full card, UPI, 
+                or banking credentials on our servers — payment details are handled directly by our payment processor.
+              </p>
+              <p className="text-[#6b5940] leading-relaxed">
+                You are responsible for ensuring that any payment method you use belongs to you and is used with proper authorization.
+              </p>
+            </section>
+
+            {/* Section 07 */}
+            <section id="shipping" className="bg-white rounded-3xl border border-[#3d2a1a]/10 p-8 shadow-sm transition-all duration-300 hover:shadow-md">
+              <div className="flex items-center gap-3.5 mb-5 border-b border-[#3d2a1a]/5 pb-4">
+                <span className="font-mono text-[#B8860B] text-lg font-semibold">07</span>
+                <h2 className="font-serif font-medium text-2xl text-[#3d2a1a] tracking-tight">
+                  Shipping and Delivery
+                </h2>
+              </div>
+              <p className="text-[#6b5940] leading-relaxed">
+                Estimated delivery timelines are provided for convenience and are not guaranteed. Delays may occur 
+                due to courier availability, weather, regional restrictions, or other circumstances outside our control.
+              </p>
+            </section>
+
+            {/* Section 08 */}
+            <section id="returns" className="bg-white rounded-3xl border border-[#3d2a1a]/10 p-8 shadow-sm transition-all duration-300 hover:shadow-md">
+              <div className="flex items-center gap-3.5 mb-5 border-b border-[#3d2a1a]/5 pb-4">
+                <span className="font-mono text-[#B8860B] text-lg font-semibold">08</span>
+                <h2 className="font-serif font-medium text-2xl text-[#3d2a1a] tracking-tight">
+                  Returns and Refunds
+                </h2>
+              </div>
+              <p className="text-[#6b5940] leading-relaxed">
                 Please refer to our separate{' '}
-                <Link to="/returns-policy" className="text-[#B8860B] font-semibold hover:underline inline-flex items-center gap-1">
+                <Link to="/return-refund-policy" className="text-[#B8860B] font-semibold hover:underline inline-flex items-center gap-1">
                   Returns &amp; Refunds Policy
-                  <ArrowLeft className="w-3 h-3 rotate-180" />
+                  <ArrowLeft className="w-3.5 h-3.5 rotate-180" />
                 </Link>{' '}
-                for the current return window, eligibility conditions, and refund
-                process.
+                for the current return window, eligibility conditions, and refund process.
               </p>
-            </Section>
-          </div>
+            </section>
 
-          <div id="section-9">
-            <Section number={9} title="Prohibited Uses" icon={Shield}>
-              <p>You may not use this site or its content:</p>
-              <ul className="list-disc pl-5 space-y-2">
-                <li>for any unlawful purpose, or to solicit others to perform unlawful acts;</li>
-                <li>to violate any applicable law or regulation;</li>
-                <li>to infringe our intellectual property rights or those of others;</li>
-                <li>to harass, abuse, or discriminate against any person;</li>
-                <li>to submit false or misleading information;</li>
-                <li>to upload viruses, malware, or any code intended to disrupt the site;</li>
+            {/* Section 09 */}
+            <section id="prohibited" className="bg-white rounded-3xl border border-[#3d2a1a]/10 p-8 shadow-sm transition-all duration-300 hover:shadow-md">
+              <div className="flex items-center gap-3.5 mb-5 border-b border-[#3d2a1a]/5 pb-4">
+                <span className="font-mono text-[#B8860B] text-lg font-semibold">09</span>
+                <h2 className="font-serif font-medium text-2xl text-[#3d2a1a] tracking-tight">
+                  Prohibited Uses
+                </h2>
+              </div>
+              <p className="text-[#6b5940] leading-relaxed mb-4">You may not use this site or its content:</p>
+              <ul className="list-none pl-1 text-[#6b5940] space-y-2.5">
+                <li className="flex items-start gap-2.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#B8860B] mt-2 flex-shrink-0" />
+                  <span>for any unlawful purpose, or to solicit others to perform unlawful acts</span>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#B8860B] mt-2 flex-shrink-0" />
+                  <span>to violate any applicable law or regulation</span>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#B8860B] mt-2 flex-shrink-0" />
+                  <span>to infringe our intellectual property rights or those of others</span>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#B8860B] mt-2 flex-shrink-0" />
+                  <span>to harass, abuse, or discriminate against any person</span>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#B8860B] mt-2 flex-shrink-0" />
+                  <span>to submit false or misleading information</span>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#B8860B] mt-2 flex-shrink-0" />
+                  <span>to upload viruses, malware, or any code intended to disrupt the site</span>
+                </li>
               </ul>
-            </Section>
-          </div>
+            </section>
 
-          <div id="section-10">
-            <Section number={10} title="Intellectual Property" icon={Shield}>
-              <p>
-                All content on this website — including our logo, product
-                photography, graphics, text, and design — is the property of House
-                of Toshali and is protected under applicable intellectual property
-                law.
+            {/* Section 10 */}
+            <section id="property" className="bg-white rounded-3xl border border-[#3d2a1a]/10 p-8 shadow-sm transition-all duration-300 hover:shadow-md">
+              <div className="flex items-center gap-3.5 mb-5 border-b border-[#3d2a1a]/5 pb-4">
+                <span className="font-mono text-[#B8860B] text-lg font-semibold">10</span>
+                <h2 className="font-serif font-medium text-2xl text-[#3d2a1a] tracking-tight">
+                  Intellectual Property
+                </h2>
+              </div>
+              <p className="text-[#6b5940] leading-relaxed">
+                All content on this website — including our logo, product photography, graphics, text, and design — 
+                is the property of House of Toshali and is protected under applicable intellectual property law.
               </p>
-            </Section>
-          </div>
+            </section>
 
-          {/* Continue with remaining sections 11-18 similarly */}
-          {/* ... */}
-
-          {/* Contact Section */}
-          <div className="mt-8 p-6 bg-gradient-to-br from-[#FBF9F2] to-white rounded-2xl border border-[#3d2a1a]/10">
-            <h3 className="font-serif text-xl text-[#3d2a1a] mb-4">Need Help?</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="flex items-center gap-3 p-3 bg-white rounded-xl hover:shadow-md transition-shadow">
-                <div className="w-10 h-10 rounded-full bg-[#B8860B]/10 flex items-center justify-center">
-                  <Mail className="w-5 h-5 text-[#B8860B]" />
+            {/* Need Help? Footer Box */}
+            <div className="p-6 bg-gradient-to-br from-[#FBF9F2] to-white rounded-3xl border border-[#3d2a1a]/10 mt-12">
+              <h3 className="font-serif text-xl text-[#3d2a1a] mb-4">Need Help?</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex items-center gap-3 p-3 bg-white rounded-2xl border border-[#3d2a1a]/5 hover:shadow-md transition-shadow">
+                  <div className="w-10 h-10 rounded-full bg-[#B8860B]/10 flex items-center justify-center flex-shrink-0">
+                    <Mail className="w-5 h-5 text-[#B8860B]" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-[#6b5940] uppercase tracking-wider font-mono">Email</p>
+                    <p className="text-xs font-semibold text-[#3d2a1a] break-all">support@houseoftoshali.com</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs text-[#a89c8a]">Email</p>
-                  <p className="text-sm font-medium text-[#3d2a1a]">support@houseoftoshali.com</p>
+                
+                <div className="flex items-center gap-3 p-3 bg-white rounded-2xl border border-[#3d2a1a]/5 hover:shadow-md transition-shadow">
+                  <div className="w-10 h-10 rounded-full bg-[#B8860B]/10 flex items-center justify-center flex-shrink-0">
+                    <Phone className="w-5 h-5 text-[#B8860B]" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-[#6b5940] uppercase tracking-wider font-mono">Phone</p>
+                    <p className="text-xs font-semibold text-[#3d2a1a]">+91 XXXXXXXXXX</p>
+                  </div>
                 </div>
-              </div>
-              
-              <div className="flex items-center gap-3 p-3 bg-white rounded-xl hover:shadow-md transition-shadow">
-                <div className="w-10 h-10 rounded-full bg-[#B8860B]/10 flex items-center justify-center">
-                  <Phone className="w-5 h-5 text-[#B8860B]" />
-                </div>
-                <div>
-                  <p className="text-xs text-[#a89c8a]">Phone</p>
-                  <p className="text-sm font-medium text-[#3d2a1a]">+91 XXXXXXXXXX</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-3 p-3 bg-white rounded-xl hover:shadow-md transition-shadow">
-                <div className="w-10 h-10 rounded-full bg-[#B8860B]/10 flex items-center justify-center">
-                  <MessageCircle className="w-5 h-5 text-[#B8860B]" />
-                </div>
-                <div>
-                  <p className="text-xs text-[#a89c8a]">Live Chat</p>
-                  <p className="text-sm font-medium text-[#3d2a1a]">Available 10 AM - 6 PM</p>
+                
+                <div className="flex items-center gap-3 p-3 bg-white rounded-2xl border border-[#3d2a1a]/5 hover:shadow-md transition-shadow">
+                  <div className="w-10 h-10 rounded-full bg-[#B8860B]/10 flex items-center justify-center flex-shrink-0">
+                    <MessageCircle className="w-5 h-5 text-[#B8860B]" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-[#6b5940] uppercase tracking-wider font-mono">Live Chat</p>
+                    <p className="text-xs font-semibold text-[#3d2a1a]">Available 10 AM - 6 PM</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Back to Top Button */}
-        <button
-          onClick={scrollToTop}
-          className="fixed bottom-8 right-8 w-12 h-12 bg-[#B8860B] text-white rounded-full shadow-lg hover:bg-[#9A7209] transition-all duration-300 flex items-center justify-center hover:scale-110 group z-50"
-        >
-          <ArrowLeft className="w-5 h-5 rotate-90 group-hover:-translate-y-1 transition-transform" />
-        </button>
+          </main>
+        </div>
       </div>
+
+      {/* Floating Back to Top Button */}
+      <button
+        onClick={scrollToTop}
+        className="fixed bottom-8 right-8 w-12 h-12 bg-[#B8860B] text-white rounded-full shadow-lg hover:bg-[#9A7209] transition-all duration-300 flex items-center justify-center hover:scale-110 group z-50 border border-white/20"
+      >
+        <ArrowLeft className="w-5 h-5 rotate-90 group-hover:-translate-y-1 transition-transform" />
+      </button>
     </div>
   )
 }

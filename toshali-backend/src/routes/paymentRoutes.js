@@ -4,6 +4,7 @@ import {
   verifyPayment,
   getPaymentStatus,
   getPaymentAttempts,
+  retryPayment,
 } from '../controllers/paymentController.js'
 import { protect } from '../middlewares/authMiddleware.js'
 
@@ -13,6 +14,7 @@ router.use(protect)
 
 router.post('/create', createPayment)                 // POST /api/payments/create
 router.post('/verify', verifyPayment)                 // POST /api/payments/verify
+router.post('/retry', retryPayment)                   // POST /api/payments/retry
 router.get('/:orderId/status', getPaymentStatus)      // GET  /api/payments/:orderId/status
 router.get('/:orderId/attempts', getPaymentAttempts)  // GET  /api/payments/:orderId/attempts
 

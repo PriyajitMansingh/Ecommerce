@@ -39,6 +39,9 @@ export const createPayment = (payload) =>
 export const verifyPayment = (payload) =>
   apiFetch('/payments/verify', { method: 'POST', body: JSON.stringify(payload) })
 
+export const retryPayment = (payload) =>
+  apiFetch('/payments/retry', { method: 'POST', body: JSON.stringify(payload) })
+
 export const getOrderById = (orderId) => apiFetch(`/orders/${orderId}`)
 
 export const getMyOrders = () => apiFetch('/orders')

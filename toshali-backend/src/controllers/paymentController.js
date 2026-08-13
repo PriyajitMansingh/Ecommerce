@@ -1,16 +1,5 @@
 
 
-
-
-
-
-
-
-
-
-
-
-
 import crypto from 'crypto'
 import Razorpay from 'razorpay'
 import Order from '../models/Order.js'
@@ -29,7 +18,6 @@ const getRazorpayInstance = () => {
 // POST /api/payments/create — initiate a payment for an order
 export const createPayment = async (req, res) => {
   try {
-    console.log("testing")
     const { orderId, method, upiId } = req.body
 
     if (!orderId || !method) {
@@ -48,13 +36,13 @@ export const createPayment = async (req, res) => {
       return res.status(400).json({ message: 'This order has already been paid.' })
     }
 
-    // Check if payment record exists with pending status
+    // Check if payment record exists with pending/initiated status (not failed)
     let payment = await Payment.findOne({ 
       orderId: order._id,
       status: { $in: ['pending', 'initiated'] }
     })
 
-    // If pending payment exists, return it instead of creating new
+    // If active pending payment exists, return it instead of creating new
     if (payment) {
       // For COD, handle separately
       if (method === 'cod') {
@@ -65,14 +53,14 @@ export const createPayment = async (req, res) => {
 
       // Return existing payment details
       const upiVpa = process.env.RAZORPAY_UPI_VPA || 'houseoftoshali@upi'
-      const upiString = `upi://pay?pa=${upiVpa}&pn=HouseOfToshali&am=${order.grandTotal}&cu=INR&tn=Order-${order.orderNumber}`
+      const upiString = `upi://pay?pa=${upiVpa}&pn=HouseOfToshali&am=${order.grandTotal.toFixed(2)}&cu=INR&tn=Order-${order.orderNumber}`
 
       return res.json({
         paymentId: payment._id,
         orderId: order._id,
         orderNumber: order.orderNumber,
         amount: Math.round(order.grandTotal * 100),
-        amountInRupees: order.grandTotal,
+        amountInRupees: Number(order.grandTotal.toFixed(2)),
         currency: 'INR',
         method: payment.method,
         status: payment.status,
@@ -155,14 +143,14 @@ export const createPayment = async (req, res) => {
 
     // For UPI / Card / Netbanking / Wallet
     const upiVpa = process.env.RAZORPAY_UPI_VPA || 'houseoftoshali@upi'
-    const upiString = `upi://pay?pa=${upiVpa}&pn=HouseOfToshali&am=${order.grandTotal}&cu=INR&tn=Order-${order.orderNumber}`
+    const upiString = `upi://pay?pa=${upiVpa}&pn=HouseOfToshali&am=${order.grandTotal.toFixed(2)}&cu=INR&tn=Order-${order.orderNumber}`
 
     res.json({
       paymentId: payment._id,
       orderId: order._id,
       orderNumber: order.orderNumber,
       amount: Math.round(order.grandTotal * 100),
-      amountInRupees: order.grandTotal,
+      amountInRupees: Number(order.grandTotal.toFixed(2)),
       currency: 'INR',
       method,
       status: 'pending',
@@ -176,6 +164,103 @@ export const createPayment = async (req, res) => {
   } catch (error) {
     console.error('createPayment error:', error)
     res.status(500).json({ message: 'Could not initiate payment.' })
+  }
+}
+
+// POST /api/payments/retry — retry payment for a failed/pending order
+export const retryPayment = async (req, res) => {
+  try {
+    const { orderId } = req.body
+
+    if (!orderId) {
+      return res.status(400).json({ message: 'orderId is required.' })
+    }
+
+    const order = await Order.findOne({ _id: orderId, userId: req.user._id })
+    if (!order) return res.status(404).json({ message: 'Order not found.' })
+
+    if (order.paymentStatus === 'paid') {
+      return res.status(400).json({ message: 'This order has already been paid.' })
+    }
+
+    if (order.orderStatus === 'cancelled') {
+      return res.status(400).json({ message: 'Cannot retry payment for a cancelled order.' })
+    }
+
+    if (order.paymentMethod === 'cod') {
+      return res.status(400).json({ message: 'Cash on Delivery orders do not need online payment.' })
+    }
+
+    // Mark any existing pending/failed payment as abandoned
+    await Payment.updateMany(
+      { orderId: order._id, status: { $in: ['pending', 'initiated', 'failed'] } },
+      { $set: { status: 'failed' } }
+    )
+
+    const razorpay = getRazorpayInstance()
+    if (!razorpay) {
+      return res.status(503).json({ message: 'Payment system is not properly configured.' })
+    }
+
+    let gatewayOrderId = ''
+    try {
+      const rzpOrder = await razorpay.orders.create({
+        amount: Math.round(order.grandTotal * 100),
+        currency: 'INR',
+        receipt: `rcpt_retry_${order._id.toString().slice(-10)}_${Date.now()}`,
+        notes: {
+          orderNumber: order.orderNumber,
+          userId: req.user._id.toString(),
+          isRetry: 'true',
+        },
+      })
+      gatewayOrderId = rzpOrder.id
+    } catch (err) {
+      console.error('Razorpay retry order creation error:', err)
+      return res.status(503).json({ message: 'Payment gateway is temporarily unavailable. Please try again later.' })
+    }
+
+    const method = order.paymentMethod || 'upi'
+    const attempt = {
+      method,
+      amount: order.grandTotal,
+      status: 'initiated',
+      attemptedAt: new Date(),
+    }
+
+    const payment = await Payment.create({
+      orderId: order._id,
+      userId: req.user._id,
+      amount: order.grandTotal,
+      method,
+      gatewayOrderId,
+      status: 'pending',
+      attempts: [attempt],
+    })
+
+    const upiVpa = process.env.RAZORPAY_UPI_VPA || 'houseoftoshali@upi'
+    const upiString = `upi://pay?pa=${upiVpa}&pn=HouseOfToshali&am=${order.grandTotal.toFixed(2)}&cu=INR&tn=Order-${order.orderNumber}`
+
+    res.json({
+      paymentId: payment._id,
+      orderId: order._id,
+      orderNumber: order.orderNumber,
+      amount: Math.round(order.grandTotal * 100),
+      amountInRupees: Number(order.grandTotal.toFixed(2)),
+      currency: 'INR',
+      method,
+      status: 'pending',
+      isRetry: true,
+      razorpayOrderId: gatewayOrderId,
+      razorpayKeyId: process.env.RAZORPAY_KEY_ID,
+      upiString: method === 'upi' ? upiString : null,
+      customerName: req.user.name || order.shippingAddress.fullName,
+      customerEmail: req.user.email || '',
+      customerMobile: order.shippingAddress.mobile || '',
+    })
+  } catch (error) {
+    console.error('retryPayment error:', error)
+    res.status(500).json({ message: 'Could not initiate payment retry.' })
   }
 }
 

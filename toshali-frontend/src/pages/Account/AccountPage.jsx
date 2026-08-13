@@ -5,26 +5,22 @@ import { Navigate, useNavigate, useLocation, Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import Navbar from '../../components/layout/Navbar'
 import { useAuth } from '../../context/AuthContext'
-import { getMyOrders, getInvoice, cancelOrder, updateOrderShippingAddress } from '../../api/checkoutApi'
+import { getMyOrders, getInvoice, cancelOrder, updateOrderShippingAddress, retryPayment, verifyPayment } from '../../api/checkoutApi'
 import { getAddresses, addAddress, updateAddress, deleteAddress, setPrimaryAddress } from '../../api/addressApi'
-
-/* ────────────────────────────────────────────────────────────────────────
-   DESIGN TOKENS — House of Toshali, refined
-   ink       #241A12   primary text / dark surfaces
-   paper     #FBF7EF   page background
-   card      #FFFFFF   surfaces
-   gold      #A9792F   primary accent (antique gold, not a gradient default)
-   goldSoft  #F1E6C8   accent surface
-   rust      #B3503A   cancelled / destructive
-   rustSoft  #F8E9E4   destructive surface
-   moss      #5C7A5A   delivered / success
-   mossSoft  #E9EFE7   success surface
-   line      #241A12 at 8–12% opacity for hairlines
-   muted     #8C7B65   secondary text
-   ──────────────────────────────────────────────────────────────────────── */
 
 const toastStyle = {
   style: { background: '#241A12', color: '#FBF7EF', fontSize: '13px', fontWeight: 600, borderRadius: '10px' },
+}
+
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    if (window.Razorpay) { resolve(true); return }
+    const script = document.createElement('script')
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+    script.onload = () => resolve(true)
+    script.onerror = () => resolve(false)
+    document.body.appendChild(script)
+  })
 }
 
 const inputClass = "w-full border border-[#241A12]/14 rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#A9792F]/40 focus:border-[#A9792F] transition-all bg-[#FBF7EF] focus:bg-white text-[#241A12] placeholder:text-[#8C7B65]/70"
@@ -194,6 +190,7 @@ const AccountPage = () => {
   const [editingOrderAddrId, setEditingOrderAddrId] = useState(null)
   const [orderAddrForm, setOrderAddrForm] = useState({})
   const [orderAddrSaving, setOrderAddrSaving] = useState(false)
+  const [retryingPaymentId, setRetryingPaymentId] = useState(null)
 
   // ── Timer refs for cleanup ──
   const cancelConfirmTimerRef = useRef(null)
@@ -440,6 +437,71 @@ const AccountPage = () => {
       toast.error(err.message || 'Could not update order shipping address.', toastStyle)
     } finally {
       setOrderAddrSaving(false)
+    }
+  }
+
+  const handleRetryPayment = async (order) => {
+    setRetryingPaymentId(order._id)
+    try {
+      await loadRazorpayScript()
+      // Use dedicated retry endpoint which creates a fresh Razorpay order
+      const pmt = await retryPayment({ orderId: order._id })
+      openRazorpayGateway(pmt, order)
+    } catch (err) {
+      toast.error(err.message || 'Could not initiate payment. Please try again.', toastStyle)
+      setRetryingPaymentId(null)
+    }
+  }
+
+  const openRazorpayGateway = (pmtData, orderObj) => {
+    if (!window.Razorpay) {
+      toast.error('Razorpay SDK failed to load.', toastStyle)
+      setRetryingPaymentId(null)
+      return
+    }
+    const options = {
+      key: pmtData.razorpayKeyId,
+      amount: pmtData.amount,
+      currency: pmtData.currency || 'INR',
+      name: 'House of Toshali',
+      description: `Order #${pmtData.orderNumber}`,
+      order_id: pmtData.razorpayOrderId,
+      prefill: {
+        name: orderObj.shippingAddress?.fullName || user?.name,
+        email: user?.email || '',
+        contact: orderObj.shippingAddress?.mobile || user?.mobile,
+      },
+      notes: { orderId: orderObj._id },
+      theme: { color: '#241A12' },
+      handler: async function (response) {
+        try {
+          await verifyPayment({
+            paymentId: pmtData.paymentId,
+            gatewayOrderId: response.razorpay_order_id,
+            gatewayPaymentId: response.razorpay_payment_id,
+            gatewaySignature: response.razorpay_signature,
+            status: 'success',
+          })
+          toast.success('Payment successful!', { icon: '✅', ...toastStyle })
+          fetchOrders()
+        } catch (err) {
+          toast.error(err.message || 'Payment verification failed', toastStyle)
+        } finally {
+          setRetryingPaymentId(null)
+        }
+      },
+      modal: {
+        ondismiss: () => {
+          toast.error('Payment cancelled.', toastStyle)
+          setRetryingPaymentId(null)
+        },
+      },
+    }
+    try {
+      new window.Razorpay(options).open()
+    } catch (err) {
+      console.error('Razorpay open error:', err)
+      setRetryingPaymentId(null)
     }
   }
 
@@ -882,7 +944,7 @@ const AccountPage = () => {
                       </span>
 
                       <div className="text-right">
-                        <p className="text-sm font-bold text-[#241A12] tabular-nums">₹{order.grandTotal || 0}</p>
+                        <p className="text-sm font-bold text-[#241A12] tabular-nums">₹{Number(order.grandTotal || 0).toFixed(2)}</p>
                         <p className={`text-[11px] font-semibold capitalize ${payColor}`}>{order.paymentStatus || 'unknown'}</p>
                       </div>
 
@@ -969,9 +1031,9 @@ const AccountPage = () => {
                               )}
                               <div className="flex-1 min-w-0">
                                 <p className="text-xs font-semibold text-[#241A12] truncate">{item.name || 'Unknown'}</p>
-                                <p className="text-[11px] text-[#8C7B65] mt-0.5 tabular-nums">Qty: {item.quantity || 0} × ₹{item.price || 0}</p>
+                                <p className="text-[11px] text-[#8C7B65] mt-0.5 tabular-nums">Qty: {item.quantity || 0} × ₹{Number(item.price || 0).toFixed(2)}</p>
                               </div>
-                              <p className="text-xs font-bold text-[#241A12] flex-shrink-0 tabular-nums">₹{item.lineTotal || 0}</p>
+                              <p className="text-xs font-bold text-[#241A12] flex-shrink-0 tabular-nums">₹{Number(item.lineTotal || 0).toFixed(2)}</p>
                             </div>
                           ))}
                         </div>
@@ -979,13 +1041,13 @@ const AccountPage = () => {
                         {/* Pricing Breakdown */}
                         <div className="border-t border-[#241A12]/8 pt-4 space-y-1.5 text-sm">
                           <div className="flex justify-between text-[#6b5940]">
-                            <span>Subtotal</span><span className="tabular-nums">₹{order.subtotal || 0}</span>
+                            <span>Subtotal</span><span className="tabular-nums">₹{Number(order.subtotal || 0).toFixed(2)}</span>
                           </div>
                           <div className="flex justify-between text-[#6b5940]">
-                            <span>Shipping</span><span className="tabular-nums">{order.shippingCharge === 0 || !order.shippingCharge ? 'Free' : '₹' + order.shippingCharge}</span>
+                            <span>Shipping</span><span className="tabular-nums">{order.shippingCharge === 0 || !order.shippingCharge ? 'Free' : '₹' + Number(order.shippingCharge).toFixed(2)}</span>
                           </div>
                           <div className="flex justify-between font-bold text-[#241A12] pt-1">
-                            <span>Total</span><span className="text-[#A9792F] tabular-nums">₹{order.grandTotal || 0}</span>
+                            <span>Total</span><span className="text-[#A9792F] tabular-nums">₹{Number(order.grandTotal || 0).toFixed(2)}</span>
                           </div>
                         </div>
 
@@ -1183,6 +1245,22 @@ const AccountPage = () => {
                                 : confirmCancelId === order._id
                                   ? 'Confirm Cancel?'
                                   : 'Cancel Order'}
+                            </button>
+                          )}
+
+                          {/* Retry Payment — only for non-paid, non-cancelled, non-COD orders */}
+                          {order.paymentStatus !== 'paid' &&
+                            order.paymentMethod !== 'cod' &&
+                            !isCancelled && (
+                            <button
+                              onClick={() => handleRetryPayment(order)}
+                              disabled={retryingPaymentId === order._id}
+                              className="flex items-center gap-1.5 text-xs font-bold text-white bg-[#A9792F] hover:bg-[#8C6226] px-4 py-2.5 rounded-xl transition-colors disabled:opacity-60"
+                            >
+                              <IconCard className="w-3.5 h-3.5" />
+                              {retryingPaymentId === order._id ? 'Opening...' : (
+                                order.paymentStatus === 'failed' ? 'Retry Payment' : 'Complete Payment'
+                              )}
                             </button>
                           )}
                         </div>

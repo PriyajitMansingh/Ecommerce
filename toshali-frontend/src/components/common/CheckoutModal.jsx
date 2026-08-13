@@ -58,7 +58,7 @@ export default function CheckoutModal({ onClose }) {
   const [availableCoupons, setAvailableCoupons] = useState([])
 
   const discount = appliedCoupon ? appliedCoupon.discountAmount : 0
-  const finalGrandTotal = Math.max(0, cartTotal - discount + shipping)
+  const finalGrandTotal = Number(Math.max(0, cartTotal - discount + shipping).toFixed(2))
 
   // Payment
   const [method, setMethod] = useState(null)
@@ -430,7 +430,7 @@ export default function CheckoutModal({ onClose }) {
                           Qty: {item.quantity}{item.productType === 'gift' ? ' · Gift item' : ''}
                         </p>
                       </div>
-                      <p className="text-xs font-bold text-[#B8860B] flex-shrink-0">₹{item.price * item.quantity}</p>
+                      <p className="text-xs font-bold text-[#B8860B] flex-shrink-0">₹{Number(item.price * item.quantity).toFixed(2)}</p>
                     </div>
                   ))}
                 </div>
@@ -486,7 +486,7 @@ export default function CheckoutModal({ onClose }) {
                   <div className="flex items-center justify-between bg-white border border-green-200 rounded-xl p-3 text-xs">
                     <div>
                       <p className="font-bold text-green-800">✅ Coupon "{appliedCoupon.code}" Applied</p>
-                      <p className="text-[11px] text-green-600">You save ₹{appliedCoupon.discountAmount}</p>
+                      <p className="text-[11px] text-green-600">You save ₹{Number(appliedCoupon.discountAmount).toFixed(2)}</p>
                     </div>
                     <button type="button" onClick={handleRemoveCoupon} className="text-[11px] font-semibold text-red-500 hover:underline">Remove</button>
                   </div>
@@ -495,17 +495,17 @@ export default function CheckoutModal({ onClose }) {
 
               {/* Price breakdown */}
               <div className="border-t border-[#3d2a1a]/10 pt-3 space-y-1.5 text-sm">
-                <div className="flex justify-between text-[#6b5940]"><span>Subtotal</span><span>₹{cartTotal}</span></div>
+                <div className="flex justify-between text-[#6b5940]"><span>Subtotal</span><span>₹{Number(cartTotal).toFixed(2)}</span></div>
                 {appliedCoupon && (
                   <div className="flex justify-between text-green-700 font-semibold">
                     <span>Coupon Discount ({appliedCoupon.code})</span>
-                    <span>-₹{appliedCoupon.discountAmount}</span>
+                    <span>-₹{Number(appliedCoupon.discountAmount).toFixed(2)}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-[#6b5940]"><span>Shipping</span><span>{shipping === 0 ? 'Free' : `₹${shipping}`}</span></div>
+                <div className="flex justify-between text-[#6b5940]"><span>Shipping</span><span>{shipping === 0 ? 'Free' : `₹${Number(shipping).toFixed(2)}`}</span></div>
                 <div className="flex justify-between font-bold text-[#3d2a1a] text-base pt-2 border-t border-[#3d2a1a]/10">
                   <span>Final Price</span>
-                  <span className="text-[#B8860B]">₹{finalGrandTotal}</span>
+                  <span className="text-[#B8860B]">₹{finalGrandTotal.toFixed(2)}</span>
                 </div>
               </div>
 
@@ -514,7 +514,7 @@ export default function CheckoutModal({ onClose }) {
                 disabled={busy}
                 className="w-full bg-[#3d2a1a] text-white text-sm font-bold py-3.5 rounded-xl hover:bg-[#B8860B] transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
               >
-                Proceed to Payment · ₹{finalGrandTotal}
+                Proceed to Payment · ₹{finalGrandTotal.toFixed(2)}
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
               </button>
 
@@ -534,7 +534,7 @@ export default function CheckoutModal({ onClose }) {
                   <p className="text-xs text-[#a89c8a]">
                     {appliedCoupon ? `Coupon ${appliedCoupon.code} Applied (-₹${appliedCoupon.discountAmount})` : 'Order Total'}
                   </p>
-                  <p className="text-base font-bold text-[#B8860B]">₹{finalGrandTotal} payable</p>
+                  <p className="text-base font-bold text-[#B8860B]">₹{finalGrandTotal.toFixed(2)} payable</p>
                 </div>
                 {method && (
                   <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-[#3d2a1a]/5 text-[#3d2a1a] uppercase">{method}</span>
@@ -583,7 +583,7 @@ export default function CheckoutModal({ onClose }) {
                     <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                   </svg>
                 )}
-                <span>{busy ? 'Opening Payment Gateway…' : `Pay Here · ₹${finalGrandTotal}`}</span>
+                <span>{busy ? 'Opening Payment Gateway…' : `Pay Here · ₹${finalGrandTotal.toFixed(2)}`}</span>
               </button>
 
               <p className="text-center text-[10px] text-[#a89c8a]">
@@ -608,7 +608,7 @@ export default function CheckoutModal({ onClose }) {
               <p className="text-sm text-[#6b5940] mb-1">Order #{createdOrder?.orderNumber}</p>
               {appliedCoupon && (
                 <p className="text-xs font-semibold text-green-700 mb-2">
-                  You saved ₹{appliedCoupon.discountAmount} with coupon {appliedCoupon.code}! 🎉
+                  You saved ₹{Number(appliedCoupon.discountAmount).toFixed(2)} with coupon {appliedCoupon.code}! 🎉
                 </p>
               )}
               <p className="text-xs text-[#a89c8a] mb-6">
