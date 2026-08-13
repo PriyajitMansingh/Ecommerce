@@ -15,6 +15,13 @@ export const createProduct = async (req, res) => {
       return res.status(400).json({ message: 'Name, SKU, slug, category and price are required.' })
     }
 
+        // Enforce the site-wide product limit before checking anything else.
+    const productCount = await Product.countDocuments()
+    if (productCount >= 25) {
+      return res.status(400).json({ message: 'Product limit reached. You cannot add more than 25 products.' })
+    }
+
+
     const normalizedPrice = toNumberOrFallback(price)
     const normalizedMrpPrice = toNumberOrFallback(mrpPrice, normalizedPrice)
     const normalizedDiscountPercent = toNumberOrFallback(discountPercent, 0)

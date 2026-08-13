@@ -20,16 +20,35 @@ const Login = () => {
     const result = await login(email, password)
     setLoading(false)
 
+    // if (result.success) {
+    //   toast.success('Welcome back!', {
+    //     icon: '👋',
+    //     style: { background: '#3d2a1a', color: '#f8f1e2', fontSize: '13px', fontWeight: 600, borderRadius: '10px' },
+    //   })
+    //   // Always land on the Home page after login — it looks completely
+    //   // different from the Login form (Hero slider, colors, products),
+    //   // so it's immediately obvious the page actually changed.
+    //   navigate('/', { replace: true })
+    // }
     if (result.success) {
-      toast.success('Welcome back!', {
-        icon: '👋',
-        style: { background: '#3d2a1a', color: '#f8f1e2', fontSize: '13px', fontWeight: 600, borderRadius: '10px' },
-      })
-      // Always land on the Home page after login — it looks completely
-      // different from the Login form (Hero slider, colors, products),
-      // so it's immediately obvious the page actually changed.
-      navigate('/', { replace: true })
-    } else {
+  toast.success('Welcome back!', {
+    icon: '👋',
+    style: {
+      background: '#3d2a1a',
+      color: '#f8f1e2',
+      fontSize: '13px',
+      fontWeight: 600,
+      borderRadius: '10px',
+    },
+  })
+
+  if (result.user?.role === 'Admin') {
+    navigate('/admin', { replace: true })
+  } else {
+    navigate('/', { replace: true })
+  }
+}
+     else {
       setError(result.message)
       toast.error(result.message, {
         style: { background: '#3d2a1a', color: '#f8f1e2', fontSize: '13px', fontWeight: 600, borderRadius: '10px' },
