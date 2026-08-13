@@ -41,7 +41,8 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data } = await axiosInstance.post('/auth/login', { email, password })
       saveSession(data)
-      return { success: true }
+ 
+       return { success: true, user: data }   // ← add this
     } catch (error) {
       const message = error.response?.data?.message || 'Login failed. Please try again.'
       return { success: false, message }
