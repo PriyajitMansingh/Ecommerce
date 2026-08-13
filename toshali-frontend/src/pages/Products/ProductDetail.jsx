@@ -5,6 +5,7 @@ import axiosInstance from '../../api/axiosInstance'
 import { useCart } from '../../context/CartContext'
 import { useWishlist } from '../../context/WishlistContext'
 import CheckoutModal from '../../components/common/CheckoutModal'
+import Navbar from '../../components/layout/Navbar'
 import almondFallback from '../../assets/images/almond.png'
 
 const toastStyle = {
@@ -115,6 +116,8 @@ const ProductDetail = () => {
 
   return (
     <div className="bg-[#FBF9F2] min-h-screen">
+      <Navbar />
+
       {/* Breadcrumb */}
       <div className="max-w-6xl mx-auto px-6 md:px-12 pt-6 pb-2">
         <nav className="flex items-center gap-2 text-xs text-[#a89c8a] flex-wrap">

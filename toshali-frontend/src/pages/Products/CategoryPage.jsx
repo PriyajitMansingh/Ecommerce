@@ -3,11 +3,13 @@ import { useParams, Link } from 'react-router-dom'
 import axiosInstance from '../../api/axiosInstance'
 import { useCart } from '../../context/CartContext'
 import almondFallback from '../../assets/images/almond.png'
+import Navbar from '../../components/layout/Navbar'
 
 
 const UpcomingCard = ({ product }) => {
   const image = product.imageUrl || almondFallback
   return (
+    
     <div className="group relative bg-white rounded-2xl border border-[#3d2a1a]/8 shadow-[0_1px_4px_rgba(61,42,26,0.06)] hover:shadow-[0_16px_32px_rgba(61,42,26,0.14)] hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden">
       {/* Badge */}
       <span className="absolute top-3.5 left-3.5 z-10 bg-[#D4AF37] text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">
@@ -145,7 +147,9 @@ const CategoryPage = () => {
 
   if (isCategoriesIndex) {
     return (
-      <section className="bg-[#FBF9F2] min-h-screen">
+      <>
+        <Navbar />
+        <section className="bg-[#FBF9F2] min-h-screen">
         <div className="max-w-6xl mx-auto px-6 md:px-12 pt-6 pb-10">
           <nav className="flex items-center gap-2 text-xs text-[#a89c8a] flex-wrap mb-6">
             <Link to="/" className="hover:text-[#B8860B] transition-colors">Home</Link>
@@ -203,23 +207,32 @@ const CategoryPage = () => {
               ))}
             </div>
           )}
+      
         </div>
+        
       </section>
+      </>
+
     )
   }
 
   if (!category) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center bg-[#FBF9F2] px-6">
-        <p className="text-sm text-red-500">Category not found.</p>
-      </div>
+      <>
+        <Navbar />
+        <div className="min-h-[60vh] flex items-center justify-center bg-[#FBF9F2] px-6">
+          <p className="text-sm text-red-500">Category not found.</p>
+        </div>
+      </>
     )
   }
 
   const hasSubcategories = category.subcategories?.length > 0
 
   return (
-    <section className="bg-[#FBF9F2] min-h-screen">
+    <>
+      <Navbar />
+      <section className="bg-[#FBF9F2] min-h-screen">
       <div className="max-w-6xl mx-auto px-6 md:px-12 pt-6 pb-2">
         <nav className="flex items-center gap-2 text-xs text-[#a89c8a] flex-wrap">
           <Link to="/" className="hover:text-[#B8860B] transition-colors">Home</Link>
@@ -349,6 +362,7 @@ const CategoryPage = () => {
         )}
       </div>
     </section>
+    </>
   )
 }
 
