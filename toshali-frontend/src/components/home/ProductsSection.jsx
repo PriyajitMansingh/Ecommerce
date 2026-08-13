@@ -36,7 +36,7 @@ const ProductsSection = () => {
   if (loading) {
     return (
       <section id="bestsellers" className="bg-[#FBF9F2] pt-8 md:pt-16 pb-16 px-4 md:px-8">
-        <SectionHeading eyebrow="Our Bestsellers" title="Handpicked, Just for You" className="mb-6 md:mb-12" />
+        <SectionHeading eyebrow="Our Products" title="Handpicked, Just for You" className="mb-6 md:mb-12" />
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
           {Array.from({ length: MAX_DISPLAY }).map((_, i) => (
             <div key={i} className="rounded-xl bg-[#F3E4C8] aspect-[3/4] animate-pulse" />
@@ -48,7 +48,7 @@ const ProductsSection = () => {
 
   return (
     <section className="bg-[#FBF9F2] pt-8 md:pt-16 pb-16 px-4 md:px-8">
-      <SectionHeading eyebrow="Our Bestsellers" title="Handpicked, Just for You" className="mb-6 md:mb-12" />
+      <SectionHeading eyebrow="Our Products" title="Handpicked, Just for You" className="mb-6 md:mb-12" />
 
       <div
         id="bestsellers"

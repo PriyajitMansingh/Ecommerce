@@ -184,9 +184,7 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-[#B8860B] transition-colors">
-                  FAQs
-                </a>
+              
               </li>
             </ul>
           </div>

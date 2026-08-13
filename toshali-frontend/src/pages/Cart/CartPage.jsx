@@ -64,6 +64,8 @@ const CartPage = () => {
   const [showLoginPrompt, setShowLoginPrompt] = useState(false)
   const [checkingAuth, setCheckingAuth] = useState(false)
 
+  const formatMoney = (value) => Number(value || 0).toFixed(2)
+
   const originalTotal = items.reduce(
     (sum, item) => sum + (item.oldPrice || item.price) * item.quantity,
     0
@@ -155,7 +157,7 @@ const CartPage = () => {
                 <div className="flex-1 min-w-0">
                   <h3 className="text-sm font-bold text-[#3d2a1a] mb-1">{item.name}</h3>
                   <p className="text-xs text-[#a89c8a] mb-2">{item.shortDescription}</p>
-                  <p className="text-base font-bold text-[#B8860B]">₹{item.price}</p>
+                  <p className="text-base font-bold text-[#B8860B]">₹{formatMoney(item.price)}</p>
                 </div>
 
                 <div className="flex items-center border border-[#3d2a1a]/15 rounded-lg flex-shrink-0">
@@ -180,7 +182,7 @@ const CartPage = () => {
                 </div>
 
                 <p className="w-20 text-right text-sm font-bold text-[#3d2a1a] flex-shrink-0">
-                  ₹{item.price * item.quantity}
+                  ₹{formatMoney(item.price * item.quantity)}
                 </p>
 
                 <button
@@ -221,12 +223,12 @@ const CartPage = () => {
             <div className="space-y-3 text-sm text-[#6b5940] mb-5">
               <div className="flex justify-between">
                 <span>Subtotal (MRP)</span>
-                <span className="font-semibold text-[#3d2a1a]">₹{originalTotal}</span>
+                <span className="font-semibold text-[#3d2a1a]">₹{formatMoney(originalTotal)}</span>
               </div>
               {discount > 0 && (
                 <div className="flex justify-between">
                   <span>Discount</span>
-                  <span className="font-semibold text-[#3a8a5a]">− ₹{discount}</span>
+                  <span className="font-semibold text-[#3a8a5a]">− ₹{formatMoney(discount)}</span>
                 </div>
               )}
               <div className="flex justify-between">
@@ -236,19 +238,19 @@ const CartPage = () => {
               <div className="flex justify-between">
                 <span>Shipping</span>
                 <span className="font-semibold text-[#3d2a1a]">
-                  {shipping === 0 ? 'Free' : `₹${shipping}`}
+                  {shipping === 0 ? 'Free' : `₹${formatMoney(shipping)}`}
                 </span>
               </div>
               {shipping > 0 && (
                 <p className="text-[11px] text-[#B8860B] bg-[#F3E4C8] px-3 py-2 rounded-lg">
-                  Add ₹{499 - cartTotal} more for free shipping
+                  Add ₹{formatMoney(499 - cartTotal)} more for free shipping
                 </p>
               )}
             </div>
 
             <div className="border-t border-[#3d2a1a]/10 pt-4 mb-6 flex justify-between">
               <span className="font-bold text-[#3d2a1a]">Total</span>
-              <span className="font-bold text-lg text-[#B8860B]">₹{grandTotal}</span>
+              <span className="font-bold text-lg text-[#B8860B]">₹{formatMoney(grandTotal)}</span>
             </div>
 
             <button
