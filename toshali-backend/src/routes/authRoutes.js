@@ -14,8 +14,8 @@ import { loginLimiter, registerLimiter, forgotPasswordLimiter } from '../middlew
 const router = express.Router()
 
 router.post('/register', registerLimiter, registerUser)
-router.post('/login', loginLimiter, loginUser)
-router.post('/admin-login', loginLimiter, adminLoginUser)
+router.post('/login', loginUser)
+router.post('/admin-login', adminLoginUser)
 router.get('/me', protect, (req, res) => res.status(200).json({ user: req.user }))
 router.get('/audit-summary/:email', getAuditSummary)
 
