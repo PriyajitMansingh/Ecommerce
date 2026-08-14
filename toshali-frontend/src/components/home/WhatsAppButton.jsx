@@ -1,6 +1,6 @@
 import React from 'react'
 
-const WHATSAPP_NUMBER = '916372569846' // country code + number, no + or spaces
+const WHATSAPP_NUMBER = '919560771457' // country code + number, no + or spaces
 const DEFAULT_MESSAGE = "Hi! I'm interested in House of Toshali's premium dry fruits."
 
 const WhatsAppButton = () => {

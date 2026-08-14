@@ -19,7 +19,7 @@ const navLinks = [
 // Dropdowns show at most this many items, plus a final "View All" tile
 const MAX_DROPDOWN_ITEMS = 4
 
-const B2B_WHATSAPP_NUMBER = '91XXXXXXXXXX'
+const B2B_WHATSAPP_NUMBER = '919560771457'
 const b2bWhatsAppHref = `https://wa.me/${B2B_WHATSAPP_NUMBER}?text=${encodeURIComponent(
   'Hi, I am interested in bulk / B2B orders from House of Toshali. Please share details.'
 )}`
