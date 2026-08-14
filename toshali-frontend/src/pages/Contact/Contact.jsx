@@ -9,11 +9,49 @@ const Contact = () => {
   const navigate = useNavigate()
   const [submitted, setSubmitted] = useState(false)
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    // Backend not ready yet — this is a realistic frontend-only placeholder.
-    setSubmitted(true)
+  // const handleSubmit = (e) => {
+  //   e.preventDefault()
+  //   // Backend not ready yet — this is a realistic frontend-only placeholder.
+  //   setSubmitted(true)
+  // }
+
+  const [loading, setLoading] = useState(false)
+const [error, setError] = useState('')
+
+const handleSubmit = async (e) => {
+  e.preventDefault()
+
+  setLoading(true)
+  setError('')
+
+  const formData = new FormData(e.target)
+
+  formData.append(
+    'access_key',
+    import.meta.env.VITE_WEB3FORMS_ACCESS_KEY
+  )
+
+  try {
+    const response = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      body: formData,
+    })
+
+    const data = await response.json()
+
+    if (data.success) {
+      setSubmitted(true)
+      e.target.reset()
+    } else {
+      setError(data.message || 'Failed to send message. Please try again.')
+    }
+  } catch (error) {
+    console.error('Web3Forms error:', error)
+    setError('Something went wrong. Please try again.')
+  } finally {
+    setLoading(false)
   }
+}
 
   return (
     <>
@@ -59,7 +97,7 @@ const Contact = () => {
               For anything urgent, you can also reach us directly on WhatsApp.
             </p>
             <a
-              href="https://wa.me/916372569846"
+              href="https://wa.me/918144871964"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-[#25D366] text-white text-sm font-bold px-6 py-3 rounded-full hover:bg-[#1ebe5a] transition-colors"
@@ -71,30 +109,33 @@ const Contact = () => {
           <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl shadow-sm border border-[#3d2a1a]/10 space-y-4">
             <div>
               <label className="text-xs font-semibold text-[#3d2a1a] mb-1.5 block">Your Name</label>
-              <input
-                type="text"
-                required
-                placeholder="Full name"
-                className="w-full border border-[#3d2a1a]/15 rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#D4AF37]"
-              />
+             <input
+  type="text"
+  name="name"
+  required
+  placeholder="Full name"
+  className="w-full border border-[#3d2a1a]/15 rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#D4AF37]"
+/>
             </div>
             <div>
               <label className="text-xs font-semibold text-[#3d2a1a] mb-1.5 block">Your Email</label>
-              <input
-                type="email"
-                required
-                placeholder="you@example.com"
-                className="w-full border border-[#3d2a1a]/15 rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#D4AF37]"
-              />
+             <input
+  type="email"
+  name="email"
+  required
+  placeholder="you@example.com"
+  className="w-full border border-[#3d2a1a]/15 rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#D4AF37]"
+/>
             </div>
             <div>
               <label className="text-xs font-semibold text-[#3d2a1a] mb-1.5 block">Message</label>
               <textarea
-                required
-                placeholder="How can we help?"
-                rows="4"
-                className="w-full border border-[#3d2a1a]/15 rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#D4AF37]"
-              />
+  name="message"
+  required
+  placeholder="How can we help?"
+  rows="4"
+  className="w-full border border-[#3d2a1a]/15 rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#D4AF37]"
+/>
             </div>
             <button
               type="submit"
