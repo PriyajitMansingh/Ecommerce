@@ -28,7 +28,7 @@ const handleSubmit = async (e) => {
 
   formData.append(
     'access_key',
-    import.meta.env.VITE_WEB3FORMS_ACCESS_KEY
+    'afaf9515-364b-43b2-8e1d-8972f3d2a89e'
   )
 
   try {
@@ -97,7 +97,7 @@ const handleSubmit = async (e) => {
               For anything urgent, you can also reach us directly on WhatsApp.
             </p>
             <a
-              href="https://wa.me/918144871964"
+              href="https://wa.me/919560771457"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-[#25D366] text-white text-sm font-bold px-6 py-3 rounded-full hover:bg-[#1ebe5a] transition-colors"
