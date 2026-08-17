@@ -3,6 +3,7 @@ import {
   registerUser,
   loginUser,
   adminLoginUser,
+  logoutUser,
   getAuditSummary,
   getSecurityQuestions,
   verifySecurityAnswers,
@@ -16,6 +17,7 @@ const router = express.Router()
 router.post('/register', registerLimiter, registerUser)
 router.post('/login', loginUser)
 router.post('/admin-login', adminLoginUser)
+router.post('/logout', logoutUser)
 router.get('/me', protect, (req, res) => res.status(200).json({ user: req.user }))
 router.get('/audit-summary/:email', getAuditSummary)
 

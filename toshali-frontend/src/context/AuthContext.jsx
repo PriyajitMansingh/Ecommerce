@@ -17,10 +17,7 @@ export const AuthProvider = ({ children }) => {
   const saveSession = useCallback((userData) => {
     setUser((prev) => {
       const merged = { ...prev, ...userData }
-      // Don't keep a stale token field if backend uses cookies only
-      if (merged.token === undefined && prev?.token) {
-        // optional: delete merged.token
-      }
+      delete merged.token
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify(merged))
       return merged
     })

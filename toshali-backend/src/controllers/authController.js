@@ -6,6 +6,13 @@ import generateToken from '../utils/generateToken.js'
 
 const REQUIRED_QUESTIONS = ['Favorite Food', 'Favorite Color', 'Favorite Birth Place']
 
+const cookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+}
+
 // POST /api/auth/register
 export const registerUser = async (req, res) => {
   try {
@@ -79,6 +86,7 @@ export const registerUser = async (req, res) => {
     await AuditLog.create({ action: 'REGISTER', email, status: 'SUCCESS', ipAddress: req.ip })
 
     const token = generateToken(user._id, user.role)
+    res.cookie('token', token, cookieOptions)
 
     res.status(201).json({
       _id: user._id,
@@ -188,6 +196,7 @@ export const adminLoginUser = async (req, res) => {
     await AuditLog.create({ action: 'LOGIN', email, status: 'SUCCESS', reason: 'Admin login', ipAddress: req.ip })
 
     const token = generateToken(user._id, user.role)
+    res.cookie('token', token, cookieOptions)
     res.status(200).json({
       _id: user._id, name: user.name, email: user.email, mobile: user.mobile, role: user.role, token,
     })
@@ -220,6 +229,7 @@ export const loginUser = async (req, res) => {
     }
     await AuditLog.create({ action: 'LOGIN', email, status: 'SUCCESS', ipAddress: req.ip })
     const token = generateToken(user._id, user.role)
+    res.cookie('token', token, cookieOptions)
     res.status(200).json({
       _id: user._id, name: user.name, email: user.email, mobile: user.mobile, role: user.role, addresses: user.addresses || [], token,
     })
@@ -227,6 +237,13 @@ export const loginUser = async (req, res) => {
     console.error('loginUser error:', error)
     res.status(500).json({ message: 'Something went wrong. Please try again later.' })
   }
+}
+
+// POST /api/auth/logout
+export const logoutUser = async (req, res) => {
+  res.clearCookie('token', cookieOptions)
+  res.clearCookie('toshali_token', cookieOptions)
+  res.status(200).json({ message: 'Logged out successfully' })
 }
 
 // GET /api/auth/audit-summary/:email

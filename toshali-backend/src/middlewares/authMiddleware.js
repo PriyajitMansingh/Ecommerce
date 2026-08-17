@@ -4,10 +4,16 @@ import User from '../models/User.js'
 export const protect = async (req, res, next) => {
   let token
 
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-    try {
-      token = req.headers.authorization.split(' ')[1]
+  if (req.cookies?.token) {
+    token = req.cookies.token
+  } else if (req.cookies?.toshali_token) {
+    token = req.cookies.toshali_token
+  } else if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    token = req.headers.authorization.split(' ')[1]
+  }
 
+  if (token) {
+    try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
       req.user = await User.findById(decoded.id).select('-passwordHash')
@@ -22,7 +28,6 @@ export const protect = async (req, res, next) => {
 
       next()
     } catch (error) {
-      
       console.log('❌ JWT verify failed:', error.message)
       return res.status(401).json({ message: 'Not authorized, token failed.', debug: error.message })
     }

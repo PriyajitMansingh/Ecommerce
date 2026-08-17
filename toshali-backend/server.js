@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
 import dotenv from 'dotenv'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -58,6 +59,7 @@ app.use(
 )
 
 app.use(express.json())
+app.use(cookieParser())
 
 // Serve uploaded product images statically
 const __filename = fileURLToPath(import.meta.url)

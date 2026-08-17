@@ -73,6 +73,7 @@ const HeroSlider = () => {
                   alt={slide.alt}
                   data-index={i}
                   className="w-full h-full object-cover"
+                  // className="w-full h-full object-contain sm:object-cover"
                   style={{
                     animation: i === current && !paused ? 'toshaliKenBurns 9s ease-out forwards' : 'none',
                   }}

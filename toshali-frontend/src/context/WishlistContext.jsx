@@ -40,28 +40,20 @@ const toastStyle = {
   },
 }
 
-function getToken() {
+function hasSession() {
   try {
     const raw = sessionStorage.getItem(SESSION_KEY)
-    if (!raw) return null
-    const session = JSON.parse(raw)
-    return session?.token || null
+    return !!raw
   } catch {
-    return null
+    return false
   }
 }
 
 async function apiFetch(path, options = {}) {
-  const token = getToken()
-  if (!token) {
-    throw new Error('Please log in to use your wishlist.')
-  }
-
   const response = await fetch(`${API_BASE_URL}${path}`, {
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
       ...(options.headers || {}),
     },
     ...options,
@@ -85,7 +77,7 @@ export const WishlistProvider = ({ children }) => {
 
   // Fetch wishlist on mount — only if a user token exists
   const fetchWishlist = useCallback(async () => {
-    if (!getToken()) {
+    if (!hasSession()) {
       setItems(readStoredItems())
       return
     }
@@ -96,9 +88,12 @@ export const WishlistProvider = ({ children }) => {
       const normalizedItems = data?.wishlist?.products || data?.products || data?.wishlist || data || []
       setItems(normalizedItems)
     } catch (error) {
-      console.error('Error fetching wishlist:', error)
       setItems(readStoredItems())
-      if (error.message !== 'Please log in to use your wishlist.') {
+      const isAuthError = /Not authorized|token|log in|Please log in/i.test(error.message || '')
+      if (isAuthError) {
+        sessionStorage.removeItem(SESSION_KEY)
+      } else {
+        console.error('Error fetching wishlist:', error)
         toast.error('Failed to load wishlist', toastStyle)
       }
     } finally {
@@ -137,7 +132,7 @@ export const WishlistProvider = ({ children }) => {
       setItems((prev) => [...prev, fallbackItem])
     }
 
-    if (!getToken()) {
+    if (!hasSession()) {
       addLocally()
       toast.success(`${productName} added to wishlist`, { icon: '❤️', ...toastStyle })
       return
@@ -187,7 +182,7 @@ export const WishlistProvider = ({ children }) => {
 
       const productId = productToRemove._id || productToRemove.id || productToRemove.productId
 
-      if (!productId || !getToken()) {
+      if (!productId || !hasSession()) {
         toast(`${productToRemove.name} removed from wishlist`, { icon: '💔', ...toastStyle })
         return
       }

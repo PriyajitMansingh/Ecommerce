@@ -1,4 +1,4 @@
-﻿import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useState } from 'react'
 import axiosInstance from '../../api/axiosInstance'
 
 const AdminAuthContext = createContext(null)
@@ -21,8 +21,10 @@ export const AdminAuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const { data } = await axiosInstance.post('/auth/admin-login', { email, password })
-      setAdmin(data)
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+      const adminData = { ...data }
+      delete adminData.token
+      setAdmin(adminData)
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(adminData))
       return { success: true }
     } catch (error) {
       const message = error.response?.data?.message || 'Login failed. Please try again.'
@@ -30,7 +32,12 @@ export const AdminAuthProvider = ({ children }) => {
     }
   }
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await axiosInstance.post('/auth/logout')
+    } catch {
+      // ignore network errors
+    }
     setAdmin(null)
     sessionStorage.removeItem(STORAGE_KEY)
   }

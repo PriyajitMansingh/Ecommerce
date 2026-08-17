@@ -175,7 +175,9 @@ const Login = () => {
     if (result.user?.role === 'Admin') {
       try {
         const { data } = await axiosInstance.post('/auth/admin-login', { email, password })
-        sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(data))
+        const adminData = { ...data }
+        delete adminData.token
+        sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(adminData))
 
         setLoading(false)
         toast.success('Welcome back, Admin!', {

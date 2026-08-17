@@ -1,43 +1,26 @@
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
-const SESSION_KEY = 'toshali_customer_session'
+import axiosInstance from './axiosInstance'
 
-function getToken() {
-  try {
-    const raw = sessionStorage.getItem(SESSION_KEY)
-    if (!raw) return null
-    return JSON.parse(raw).token || null
-  } catch {
-    return null
-  }
-}
-
-async function apiFetch(path, options = {}) {
-  const token = getToken()
-  if (!token) throw new Error('Please log in to continue.')
-
-  const res = await fetch(`${API_BASE}${path}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-      ...options.headers,
-    },
-  })
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.message || 'Something went wrong')
+export const getAddresses = async () => {
+  const { data } = await axiosInstance.get('/address')
   return data
 }
 
-export const getAddresses = () => apiFetch('/address')
+export const addAddress = async (addressData) => {
+  const { data } = await axiosInstance.post('/address', addressData)
+  return data
+}
 
-export const addAddress = (addressData) =>
-  apiFetch('/address', { method: 'POST', body: JSON.stringify(addressData) })
+export const updateAddress = async (addressId, addressData) => {
+  const { data } = await axiosInstance.patch(`/address/${addressId}`, addressData)
+  return data
+}
 
-export const updateAddress = (addressId, addressData) =>
-  apiFetch(`/address/${addressId}`, { method: 'PATCH', body: JSON.stringify(addressData) })
+export const deleteAddress = async (addressId) => {
+  const { data } = await axiosInstance.delete(`/address/${addressId}`)
+  return data
+}
 
-export const deleteAddress = (addressId) =>
-  apiFetch(`/address/${addressId}`, { method: 'DELETE' })
-
-export const setPrimaryAddress = (addressId) =>
-  apiFetch(`/address/${addressId}/primary`, { method: 'PATCH' })
+export const setPrimaryAddress = async (addressId) => {
+  const { data } = await axiosInstance.patch(`/address/${addressId}/primary`)
+  return data
+}

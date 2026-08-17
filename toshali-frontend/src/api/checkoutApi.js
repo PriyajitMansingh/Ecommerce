@@ -1,76 +1,66 @@
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
-const SESSION_KEY = 'toshali_customer_session'
+import axiosInstance from './axiosInstance'
 
-function getToken() {
-  try {
-    const raw = sessionStorage.getItem(SESSION_KEY)
-    if (!raw) return null
-    return JSON.parse(raw).token || null
-  } catch {
-    return null
-  }
-}
-
-async function apiFetch(path, options = {}) {
-  const token = getToken()
-  if (!token) throw new Error('Please log in to continue.')
-
-  const res = await fetch(`${API_BASE}${path}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-      ...options.headers,
-    },
-  })
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.message || 'Something went wrong')
+export const validateCheckout = async () => {
+  const { data } = await axiosInstance.post('/checkout/validate')
   return data
 }
 
-export const validateCheckout = () => apiFetch('/checkout/validate', { method: 'POST' })
+export const createOrder = async (payload) => {
+  const { data } = await axiosInstance.post('/orders', payload)
+  return data
+}
 
-export const createOrder = (payload) =>
-  apiFetch('/orders', { method: 'POST', body: JSON.stringify(payload) })
+export const createPayment = async (payload) => {
+  const { data } = await axiosInstance.post('/payments/create', payload)
+  return data
+}
 
-export const createPayment = (payload) =>
-  apiFetch('/payments/create', { method: 'POST', body: JSON.stringify(payload) })
+export const verifyPayment = async (payload) => {
+  const { data } = await axiosInstance.post('/payments/verify', payload)
+  return data
+}
 
-export const verifyPayment = (payload) =>
-  apiFetch('/payments/verify', { method: 'POST', body: JSON.stringify(payload) })
+export const retryPayment = async (payload) => {
+  const { data } = await axiosInstance.post('/payments/retry', payload)
+  return data
+}
 
-export const retryPayment = (payload) =>
-  apiFetch('/payments/retry', { method: 'POST', body: JSON.stringify(payload) })
+export const getOrderById = async (orderId) => {
+  const { data } = await axiosInstance.get(`/orders/${orderId}`)
+  return data
+}
 
-export const getOrderById = (orderId) => apiFetch(`/orders/${orderId}`)
+export const getMyOrders = async () => {
+  const { data } = await axiosInstance.get('/orders')
+  return data
+}
 
-export const getMyOrders = () => apiFetch('/orders')
+export const getInvoice = async (orderId) => {
+  const { data } = await axiosInstance.get(`/orders/${orderId}/invoice`)
+  return data
+}
 
-export const getInvoice = (orderId) => apiFetch(`/orders/${orderId}/invoice`)
+export const cancelOrder = async (orderId, reason) => {
+  const { data } = await axiosInstance.post(`/orders/${orderId}/cancel`, { reason })
+  return data
+}
 
-export const cancelOrder = (orderId, reason) =>
-  apiFetch(`/orders/${orderId}/cancel`, { method: 'POST', body: JSON.stringify({ reason }) })
-
-export const updateOrderShippingAddress = (orderId, shippingAddress) =>
-  apiFetch(`/orders/${orderId}/shipping-address`, {
-    method: 'PATCH',
-    body: JSON.stringify({ shippingAddress }),
-  })
+export const updateOrderShippingAddress = async (orderId, shippingAddress) => {
+  const { data } = await axiosInstance.patch(`/orders/${orderId}/shipping-address`, { shippingAddress })
+  return data
+}
 
 // Apply coupon against DB — validates isActive, expiry, minOrder, usageLimit
-export const applyCoupon = (couponCode, subtotal) =>
-  apiFetch('/coupon/apply', {
-    method: 'POST',
-    body: JSON.stringify({ couponCode, subtotal }),
-  })
+export const applyCoupon = async (couponCode, subtotal) => {
+  const { data } = await axiosInstance.post('/coupon/apply', { couponCode, subtotal })
+  return data
+}
 
 // Fetch active, non-expired coupons for checkout display (no auth needed)
-export const getActiveCoupons = () =>
-  fetch(`${API_BASE}/coupon/get-active`).then(async (r) => {
-    const d = await r.json()
-    if (!r.ok) throw new Error(d.message || 'Could not load coupons')
-    return d
-  })
+export const getActiveCoupons = async () => {
+  const { data } = await axiosInstance.get('/coupon/get-active')
+  return data
+}
 
 
 

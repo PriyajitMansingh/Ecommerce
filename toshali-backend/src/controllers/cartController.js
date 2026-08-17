@@ -139,4 +139,54 @@ export const clearCart = async (req, res) => {
   }
 };
 
+// POST /api/cart/merge   { items: [{ productId, quantity, productType }] }
+export const mergeCart = async (req, res) => {
+  try {
+    const { items = [] } = req.body;
+    const cart = await findOrCreateCart(req.user._id);
+
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.json({ message: 'No items to merge', cart: await toCartResponse(cart) });
+    }
+
+    for (const guestItem of items) {
+      const { productId, quantity = 1, productType = 'product' } = guestItem;
+      const normalizedType = productType === 'gift' ? 'gift' : 'product';
+
+      if (!productId || quantity < 1) continue;
+
+      let productDoc = null;
+      if (normalizedType === 'gift') {
+        productDoc = await GiftProduct.findById(productId);
+      } else {
+        productDoc = await Product.findById(productId);
+        if (!productDoc || !productDoc.isActive) continue;
+      }
+
+      if (!productDoc) continue;
+
+      const existing = cart.items.find(
+        (i) => i.product.toString() === productId.toString() && (i.productType || 'product') === normalizedType
+      );
+
+      const availableStock = normalizedType === 'product' ? productDoc.stockQty : Infinity;
+
+      if (existing) {
+        existing.quantity = Math.min(existing.quantity + quantity, availableStock);
+      } else {
+        const initialQty = Math.min(quantity, availableStock);
+        if (initialQty > 0) {
+          cart.items.push({ product: productId, productType: normalizedType, quantity: initialQty });
+        }
+      }
+    }
+
+    await cart.save();
+    res.json({ message: 'Cart merged successfully', cart: await toCartResponse(cart) });
+  } catch (error) {
+    console.error('mergeCart failed:', error.message);
+    res.status(500).json({ message: 'Failed to merge cart.', debug: error.message });
+  }
+};
+
 export { findOrCreateCart, toCartResponse };
