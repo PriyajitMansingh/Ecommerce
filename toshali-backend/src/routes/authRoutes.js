@@ -9,7 +9,7 @@ import {
   verifySecurityAnswers,
   resetPassword,
 } from '../controllers/authController.js'
-import { protect } from '../middlewares/authMiddleware.js'
+import { protect, adminOnly } from '../middlewares/authMiddleware.js'
 import { loginLimiter, registerLimiter, forgotPasswordLimiter } from '../middlewares/rateLimiter.js'
 
 const router = express.Router()
@@ -19,6 +19,7 @@ router.post('/login', loginUser)
 router.post('/admin-login', adminLoginUser)
 router.post('/logout', logoutUser)
 router.get('/me', protect, (req, res) => res.status(200).json({ user: req.user }))
+router.get('/admin-me', protect, adminOnly, (req, res) => res.status(200).json({ user: req.user }))
 router.get('/audit-summary/:email', getAuditSummary)
 
 // Forgot password (security-question based) — all 3 steps rate-limited
