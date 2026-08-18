@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
+import adminAxios from '../api/adminAxios'
+ 
 import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import adminAxios from '../api/adminAxios'
 import axiosInstance from '../../api/axiosInstance'
 
-const stats = (totalProducts, activeOrders) => [
+const stats = (totalProducts, activeOrders, outOfStockCount, pendingPaymentCount) => [
   {
     label: 'Total Products',
     value: String(totalProducts),
@@ -29,7 +30,7 @@ const stats = (totalProducts, activeOrders) => [
   },
   {
     label: 'Out of Stock',
-    value: '0',
+    value: String(outOfStockCount),
     accent: 'text-red-500',
     bg: 'bg-gradient-to-br from-red-50 to-red-100',
     icon: (
@@ -40,7 +41,7 @@ const stats = (totalProducts, activeOrders) => [
   },
   {
     label: 'Pending Payment',
-    value: '0',
+    value: String(pendingPaymentCount),
     accent: 'text-[#a89c8a]',
     bg: 'bg-gradient-to-br from-gray-100 to-gray-200',
     icon: (
@@ -86,12 +87,12 @@ const AdminDashboard = () => {
   useEffect(() => {
     loadCategories()
     // Fetch total product count from admin endpoint (includes inactive products)
-    adminAxios
+    axiosInstance
       .get('/products/admin/all')
       .then(({ data }) => setTotalProducts(data.length))
       .catch(() => setTotalProducts('—'))
     // Fetch active orders count (exclude delivered + cancelled)
-    adminAxios
+    axiosInstance
       .get('/orders/admin/all')
       .then(({ data }) => {
         const active = data.filter((o) => !['delivered', 'cancelled'].includes(o.orderStatus))
@@ -114,7 +115,7 @@ const AdminDashboard = () => {
     e.preventDefault()
     setLoading(true)
     try {
-      const { data } = await adminAxios.post('/admin/categories', form)
+      const { data } = await axiosInstance.post('/admin/categories', form)
       toast.success(`Category "${data.name}" created successfully.`, { icon: '✅', ...toastStyle })
       setForm({ name: '', slug: '', description: '', image: '' })
       setCategories((prev) => [data, ...prev])
@@ -138,7 +139,7 @@ const AdminDashboard = () => {
     }
     setSubLoading(true)
     try {
-      const { data } = await adminAxios.post(
+      const { data } = await axiosInstance.post(
         '/categories/' + subcategoryForm.parentCategoryId + '/subcategories',
         {
           name: subcategoryForm.name,
@@ -176,7 +177,7 @@ const AdminDashboard = () => {
     e.preventDefault()
     setEditLoading(true)
     try {
-      const { data } = await adminAxios.put('/categories/' + editingId, editForm)
+      const { data } = await axiosInstance.put('/categories/' + editingId, editForm)
       toast.success(`"${data.name}" updated.`, { icon: '✅', ...toastStyle })
       setEditingId(null)
       await loadCategories()
@@ -191,7 +192,7 @@ const AdminDashboard = () => {
     if (deletingId === category._id) {
       // Second click — confirmed, proceed
       try {
-        await adminAxios.delete('/categories/' + category._id)
+        await axiosInstance.delete('/categories/' + category._id)
         toast.success(`"${category.name}" deleted.`, { icon: '🗑️', ...toastStyle })
         setDeletingId(null)
         setCategories((prev) => prev.filter((c) => c._id !== category._id))

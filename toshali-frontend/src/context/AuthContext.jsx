@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from 'react'
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import axiosInstance from '../api/axiosInstance'
 
 const AuthContext = createContext(null)
@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }) => {
       return null
     }
   })
+  const [loading, setLoading] = useState(true)
 
   const saveSession = useCallback((userData) => {
     setUser((prev) => {
@@ -22,6 +23,31 @@ export const AuthProvider = ({ children }) => {
       return merged
     })
   }, [])
+
+  useEffect(() => {
+    let isMounted = true
+    const checkAuth = async () => {
+      try {
+        const { data } = await axiosInstance.get('/account/profile')
+        if (isMounted && data) {
+          saveSession(data)
+        }
+      } catch {
+        if (isMounted) {
+          setUser(null)
+          sessionStorage.removeItem(STORAGE_KEY)
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false)
+        }
+      }
+    }
+    checkAuth()
+    return () => {
+      isMounted = false
+    }
+  }, [saveSession])
 
   const register = useCallback(async (payload) => {
     try {
@@ -38,8 +64,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data } = await axiosInstance.post('/auth/login', { email, password })
       saveSession(data)
- 
-       return { success: true, user: data }   // ← add this
+      return { success: true, user: data }
     } catch (error) {
       const message = error.response?.data?.message || 'Login failed. Please try again.'
       return { success: false, message }
@@ -84,6 +109,7 @@ export const AuthProvider = ({ children }) => {
       value={{
         user,
         isAuthenticated: !!user,
+        loading,
         register,
         login,
         logout,

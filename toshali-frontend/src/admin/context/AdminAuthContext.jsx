@@ -1,8 +1,7 @@
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import axiosInstance from '../../api/axiosInstance'
 
 const AdminAuthContext = createContext(null)
-
 const STORAGE_KEY = 'toshali_admin_session'
 
 export const AdminAuthProvider = ({ children }) => {
@@ -14,23 +13,31 @@ export const AdminAuthProvider = ({ children }) => {
       return null
     }
   })
+  const [loading, setLoading] = useState(true)
 
-  // Calls the DEDICATED admin-login endpoint — role check happens on the
-  // SERVER now (not just in the browser), and every attempt (including
-  // valid credentials from a non-Admin account) is properly audited.
-  const login = async (email, password) => {
+  const checkAdminAuth = useCallback(async () => {
     try {
-      const { data } = await axiosInstance.post('/auth/admin-login', { email, password })
-      const adminData = { ...data }
-      delete adminData.token
-      setAdmin(adminData)
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(adminData))
-      return { success: true }
-    } catch (error) {
-      const message = error.response?.data?.message || 'Login failed. Please try again.'
-      return { success: false, message }
+      const { data } = await axiosInstance.get('/auth/admin-me')
+      if (data?.user && data.user.role === 'Admin') {
+        const adminData = { ...data.user }
+        delete adminData.token
+        setAdmin(adminData)
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(adminData))
+      } else {
+        setAdmin(null)
+        sessionStorage.removeItem(STORAGE_KEY)
+      }
+    } catch {
+      setAdmin(null)
+      sessionStorage.removeItem(STORAGE_KEY)
+    } finally {
+      setLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    checkAdminAuth()
+  }, [checkAdminAuth])
 
   const logout = async () => {
     try {
@@ -43,7 +50,7 @@ export const AdminAuthProvider = ({ children }) => {
   }
 
   return (
-    <AdminAuthContext.Provider value={{ admin, isAuthenticated: !!admin, login, logout }}>
+    <AdminAuthContext.Provider value={{ admin, isAuthenticated: !!admin, loading, logout, checkAdminAuth }}>
       {children}
     </AdminAuthContext.Provider>
   )

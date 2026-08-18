@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import adminAxios from '../api/adminAxios'
+import axiosInstance from '../../api/axiosInstance'
 
 const toastStyle = {
   style: { background: '#3d2a1a', color: '#f8f1e2', fontSize: '13px', fontWeight: 600, borderRadius: '10px' },
@@ -17,7 +17,7 @@ const AdminProducts = () => {
   const fetchProducts = async () => {
     setLoading(true)
     try {
-      const { data } = await adminAxios.get('/products/admin/all')
+      const { data } = await axiosInstance.get('/products/admin/all')
       setProducts(data)
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to load products.', toastStyle)
@@ -32,7 +32,7 @@ const AdminProducts = () => {
 
   const toggleActive = async (id) => {
     try {
-      const { data } = await adminAxios.patch(`/products/${id}/toggle-active`)
+      const { data } = await axiosInstance.patch(`/products/${id}/toggle-active`)
       setProducts((prev) => prev.map((p) => (p._id === id ? data.product : p)))
       toast.success(data.message, toastStyle)
     } catch (error) {
@@ -45,7 +45,7 @@ const AdminProducts = () => {
   // Assumes backend route PATCH /products/:id/toggle-sale toggling `isOnSale`.
   const toggleSale = async (id) => {
     try {
-      const { data } = await adminAxios.patch(`/products/${id}/toggle-sale`)
+      const { data } = await axiosInstance.patch(`/products/${id}/toggle-sale`)
       setProducts((prev) => prev.map((p) => (p._id === id ? data.product : p)))
       toast.success(data.message || 'Sale status updated.', toastStyle)
     } catch (error) {

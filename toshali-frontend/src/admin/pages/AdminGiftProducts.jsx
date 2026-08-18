@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import adminAxios from '../api/adminAxios'
+import axiosInstance from '../../api/axiosInstance'
 
 const toastStyle = {
   style: { background: '#3d2a1a', color: '#f8f1e2', fontSize: '13px', fontWeight: 600, borderRadius: '10px' },
@@ -22,8 +22,8 @@ const AdminGiftProducts = () => {
     setLoading(true)
     try {
       const [occRes, prodRes] = await Promise.all([
-        adminAxios.get(`/admin/gift-occasions/${occasionId}`),
-        adminAxios.get(`/admin/gift-occasions/${occasionId}/products`),
+        axiosInstance.get(`/admin/gift-occasions/${occasionId}`),
+        axiosInstance.get(`/admin/gift-occasions/${occasionId}/products`),
       ])
       setOccasion(occRes.data)
       setProducts(prodRes.data)
@@ -73,12 +73,12 @@ const AdminGiftProducts = () => {
     }
     try {
       if (editingId) {
-        const { data } = await adminAxios.put(`/admin/gift-products/${editingId}`, payload)
+        const { data } = await axiosInstance.put(`/admin/gift-products/${editingId}`, payload)
         setProducts((prev) => prev.map((p) => (p._id === editingId ? data : p)))
         toast.success('Product updated!', { icon: '✅', ...toastStyle })
         cancelEdit()
       } else {
-        const { data } = await adminAxios.post(`/admin/gift-occasions/${occasionId}/products`, payload)
+        const { data } = await axiosInstance.post(`/admin/gift-occasions/${occasionId}/products`, payload)
         setProducts((prev) => [data, ...prev])
         toast.success(`"${data.name}" added!`, { icon: '🎁', ...toastStyle })
         setForm(initialForm)
@@ -93,7 +93,7 @@ const AdminGiftProducts = () => {
   const handleDelete = async (id, name) => {
     if (!window.confirm(`Remove "${name}" from this occasion?`)) return
     try {
-      await adminAxios.delete(`/admin/gift-products/${id}`)
+      await axiosInstance.delete(`/admin/gift-products/${id}`)
       setProducts((prev) => prev.filter((p) => p._id !== id))
       toast.success('Product removed.', { icon: '🗑️', ...toastStyle })
     } catch (error) {

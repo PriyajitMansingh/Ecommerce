@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'  // ← for navigation
 import toast from 'react-hot-toast'
-import adminAxios from '../api/adminAxios'
+import axiosInstance from '../../api/axiosInstance'
  
 const inputClass =
   "w-full border border-[#3d2a1a]/15 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#D4AF37] bg-[#FCFAF7] focus:bg-white transition-all"
@@ -26,7 +26,7 @@ const CouponsPage = () => {
   const fetchCoupons = async () => {
     setLoading(true)
     try {
-      const { data } = await adminAxios.get('/coupon/get-coupons')
+      const { data } = await axiosInstance.get('/coupon/get-coupons')
       setCoupons(data)
     } catch (err) {
       toast.error('Could not load coupons.')
@@ -48,7 +48,7 @@ const CouponsPage = () => {
     e.preventDefault()
     setSaving(true)
     try {
-      await adminAxios.post(
+      await axiosInstance.post(
         '/coupon/generation',
         {
           ...form,
@@ -78,7 +78,7 @@ const CouponsPage = () => {
   // ─── Toggle active status ──────────────────────────────────────────
   const handleToggle = async (id) => {
     try {
-      await adminAxios.patch(`/coupon/toggle-active/${id}`)
+      await axiosInstance.patch(`/coupon/toggle-active/${id}`)
       fetchCoupons()
     } catch (err) {
       toast.error('Could not update coupon.')
@@ -89,7 +89,7 @@ const CouponsPage = () => {
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this coupon? This cannot be undone.')) return
     try {
-      await adminAxios.delete(`/coupon/delete-coupon/${id}`)
+      await axiosInstance.delete(`/coupon/delete-coupon/${id}`)
       toast.success('Coupon deleted.')
       fetchCoupons()
     } catch (err) {

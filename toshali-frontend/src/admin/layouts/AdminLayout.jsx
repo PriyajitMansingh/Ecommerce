@@ -65,9 +65,9 @@ const AdminLayout = () => {
     })
   }
 
-  const handleLogout = () => {
-    logout()
-    navigate('/admin/login')
+  const handleLogout = async () => {
+    await logout()
+    navigate('/')
   }
 
   const isActive = (href) =>

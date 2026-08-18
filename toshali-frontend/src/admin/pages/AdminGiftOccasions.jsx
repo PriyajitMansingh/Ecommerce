@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import adminAxios from '../api/adminAxios'
+import axiosInstance from '../../api/axiosInstance'
 
 const toastStyle = {
   style: { background: '#3d2a1a', color: '#f8f1e2', fontSize: '13px', fontWeight: 600, borderRadius: '10px' },
@@ -19,7 +19,7 @@ const AdminGiftOccasions = () => {
   const fetchOccasions = async () => {
     setLoading(true)
     try {
-      const { data } = await adminAxios.get('/admin/gift-occasions')
+      const { data } = await axiosInstance.get('/admin/gift-occasions')
       setOccasions(data)
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to load gift occasions.', toastStyle)
@@ -59,12 +59,12 @@ const AdminGiftOccasions = () => {
     setSaving(true)
     try {
       if (editingId) {
-        const { data } = await adminAxios.put(`/admin/gift-occasions/${editingId}`, form)
+        const { data } = await axiosInstance.put(`/admin/gift-occasions/${editingId}`, form)
         setOccasions((prev) => prev.map((o) => (o._id === editingId ? data : o)))
         toast.success('Occasion updated!', { icon: '✅', ...toastStyle })
         cancelEdit()
       } else {
-        const { data } = await adminAxios.post('/admin/gift-occasions', form)
+        const { data } = await axiosInstance.post('/admin/gift-occasions', form)
         setOccasions((prev) => [data, ...prev])
         toast.success(`"${data.title}" created!`, { icon: '🎁', ...toastStyle })
         setForm(initialForm)
@@ -79,7 +79,7 @@ const AdminGiftOccasions = () => {
   const handleDelete = async (id, title) => {
     if (!window.confirm(`Delete "${title}"? This also removes its products.`)) return
     try {
-      await adminAxios.delete(`/admin/gift-occasions/${id}`)
+      await axiosInstance.delete(`/admin/gift-occasions/${id}`)
       setOccasions((prev) => prev.filter((o) => o._id !== id))
       toast.success('Occasion deleted.', { icon: '🗑️', ...toastStyle })
     } catch (error) {
@@ -89,7 +89,7 @@ const AdminGiftOccasions = () => {
 
   const toggleActive = async (id) => {
     try {
-      const { data } = await adminAxios.patch(`/admin/gift-occasions/${id}/toggle-active`)
+      const { data } = await axiosInstance.patch(`/admin/gift-occasions/${id}/toggle-active`)
       setOccasions((prev) => prev.map((o) => (o._id === id ? data : o)))
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to update status.', toastStyle)

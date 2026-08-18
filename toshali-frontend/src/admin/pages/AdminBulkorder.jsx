@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react'
-import adminAxios from '../api/adminAxios'
+import axiosInstance from '../../api/axiosInstance'
 import toast from 'react-hot-toast'
 
 const toastStyle = {
@@ -22,7 +22,7 @@ const AdminBulkorder = () => {
   const fetchBulkOrders = useCallback(async () => {
     setLoading(true)
     try {
-      const { data } = await adminAxios.get('/bulk-orders/admin/all')
+      const { data } = await axiosInstance.get('/bulk-orders/admin/all')
       setBulkOrders(data)
     } catch (error) {
       toast.error(error.response?.data?.message || 'Could not load bulk orders.', toastStyle)
@@ -46,7 +46,7 @@ const AdminBulkorder = () => {
 
     setEditingId(orderId)
     try {
-      const { data } = await adminAxios.put(`/bulk-orders/admin/${orderId}`, payload)
+      const { data } = await axiosInstance.put(`/bulk-orders/admin/${orderId}`, payload)
       setBulkOrders((prev) => prev.map((item) => (item._id === orderId ? data : item)))
       toast.success('Bulk order updated.', { icon: '✅', ...toastStyle })
     } catch (error) {

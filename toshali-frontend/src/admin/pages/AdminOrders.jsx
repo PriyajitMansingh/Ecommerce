@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import adminAxios from '../api/adminAxios'
+import axiosInstance from '../../api/axiosInstance'
 import toast from 'react-hot-toast'
 
 const toastStyle = {
@@ -305,7 +305,7 @@ const AdminOrders = () => {
   const fetchOrders = useCallback(async () => {
     setLoading(true)
     try {
-      const { data } = await adminAxios.get('/orders/admin/all')
+      const { data } = await axiosInstance.get('/orders/admin/all')
       setOrders(Array.isArray(data) ? data : [])
     } catch (err) {
       toast.error(err.response?.data?.message || 'Could not load orders.', toastStyle)
@@ -320,7 +320,7 @@ const AdminOrders = () => {
     if (statusHistory[orderId]) return
     setHistoryLoading(orderId)
     try {
-      const { data } = await adminAxios.get(`/orders/admin/${orderId}/status-history`)
+      const { data } = await axiosInstance.get(`/orders/admin/${orderId}/status-history`)
       setStatusHistory((prev) => ({ ...prev, [orderId]: data.statusHistory }))
     } catch {
       toast.error('Could not load status history.', toastStyle)
@@ -341,7 +341,7 @@ const AdminOrders = () => {
   const handleStatusUpdate = async (orderId, newStatus, note) => {
     setUpdatingId(orderId)
     try {
-      const { data } = await adminAxios.patch(`/orders/admin/${orderId}/status`, {
+      const { data } = await axiosInstance.patch(`/orders/admin/${orderId}/status`, {
         orderStatus: newStatus,
         note,
       })

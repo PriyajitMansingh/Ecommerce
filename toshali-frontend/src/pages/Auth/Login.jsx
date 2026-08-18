@@ -165,33 +165,13 @@ const Login = () => {
       return
     }
 
-    // Regular login succeeded. If this account is an Admin, silently call
-    // the DEDICATED admin-login endpoint too (same credentials) — this is
-    // what preserves the backend's separate admin audit logging. We write
-    // directly to sessionStorage here (matching AdminAuthContext's own
-    // STORAGE_KEY) rather than going through useAdminAuth(), since that
-    // context only exists inside the /admin/* route tree and isn't
-    // reachable from this page.
     if (result.user?.role === 'Admin') {
-      try {
-        const { data } = await axiosInstance.post('/auth/admin-login', { email, password })
-        const adminData = { ...data }
-        delete adminData.token
-        sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(adminData))
-
-        setLoading(false)
-        toast.success('Welcome back, Admin!', {
-          icon: '🛠️',
-          style: { background: '#3d2a1a', color: '#f8f1e2', fontSize: '13px', fontWeight: 600, borderRadius: '10px' },
-        })
-        navigate('/admin', { replace: true })
-      } catch (err) {
-        setLoading(false)
-        const message = err.response?.data?.message || 'Admin login failed. Please try again.'
-        toast.error(message, {
-          style: { background: '#3d2a1a', color: '#f8f1e2', fontSize: '13px', fontWeight: 600, borderRadius: '10px' },
-        })
-      }
+      setLoading(false)
+      toast.success('Welcome back, Admin!', {
+        icon: '🛠️',
+        style: { background: '#3d2a1a', color: '#f8f1e2', fontSize: '13px', fontWeight: 600, borderRadius: '10px' },
+      })
+      navigate('/admin', { replace: true })
       return
     }
 

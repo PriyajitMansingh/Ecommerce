@@ -1,4 +1,4 @@
-﻿// import React from 'react'
+// import React from 'react'
 // import { Routes, Route, Navigate } from 'react-router-dom'
 // import { AdminAuthProvider, useAdminAuth } from '../context/AdminAuthContext'
 // import AdminLayout from '../layouts/AdminLayout'
@@ -73,9 +73,19 @@ import AdminCoupons from '../pages/CouponsPage.jsx'
 // admin sign-in now happens through the unified /login page.
 
 const ProtectedAdminRoute = ({ children }) => {
-  const { isAuthenticated } = useAdminAuth()
-  // Redirect target changed from '/admin/login' (removed) to the unified
-  // '/login' page, which now handles both customer and admin sign-in.
+  const { isAuthenticated, loading } = useAdminAuth()
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#3d2a1a] flex items-center justify-center text-[#f8f1e2]">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-4 border-[#D4AF37] border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-sm font-medium">Verifying Admin Session...</span>
+        </div>
+      </div>
+    )
+  }
+
   return isAuthenticated ? children : <Navigate to="/login" replace />
 }
 
@@ -100,6 +110,7 @@ const AdminRoutesInner = () => {
         <Route path="gift-occasions" element={<AdminGiftOccasions />} />
         <Route path="gift-occasions/:occasionId/products" element={<AdminGiftProducts />} />
         <Route path="coupons" element={<AdminCoupons />} />
+
       </Route>
     </Routes>
   )

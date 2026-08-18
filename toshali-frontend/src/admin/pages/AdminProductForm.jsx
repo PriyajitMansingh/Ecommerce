@@ -540,7 +540,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import adminAxios from '../api/adminAxios'
 import axiosInstance from '../../api/axiosInstance'
 
 const toastStyle = {
@@ -610,7 +609,7 @@ const AdminProductForm = () => {
 
   useEffect(() => {
     if (!isEditMode) return
-    adminAxios
+    axiosInstance
       .get(`/products/admin/${id}`)
       .then(({ data }) => {
         setForm({
@@ -697,7 +696,7 @@ const AdminProductForm = () => {
     try {
       const formData = new FormData()
       formData.append('image', file)
-      const { data } = await adminAxios.post('/products/upload-image', formData, {
+      const { data } = await axiosInstance.post('/products/upload-image', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
       // data.url is a relative path like /uploads/products/filename.jpg
@@ -726,7 +725,7 @@ const AdminProductForm = () => {
 
     try {
       if (isEditMode) {
-        await adminAxios.put(`/products/${id}`, {
+        await axiosInstance.put(`/products/${id}`, {
           name: form.name,
           categoryId: form.categoryId,
           subcategoryId: form.subcategoryId || null,
@@ -743,7 +742,7 @@ const AdminProductForm = () => {
         })
         toast.success('Product updated successfully!', { icon: '✅', ...toastStyle })
       } else {
-        await adminAxios.post('/products', {
+        await axiosInstance.post('/products', {
           name: form.name,
           sku: form.sku,
           slug: form.slug,

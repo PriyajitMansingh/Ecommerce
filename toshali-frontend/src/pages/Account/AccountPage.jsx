@@ -262,8 +262,8 @@ const AccountPage = () => {
     return <Navigate to="/login" state={{ from: location.pathname }} replace />
   }
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    await logout()
     toast('You have been signed out.', { icon: '👋' })
     navigate('/')
   }

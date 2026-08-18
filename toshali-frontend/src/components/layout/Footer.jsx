@@ -81,31 +81,25 @@ const Footer = () => {
 
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 relative z-10">
           <div>
-            <div className="bg-white rounded-2xl p-3 shadow-md w-fit mb-4">
-              <img
-                src={logo}
-                alt="House of Toshali"
-                className="h-16 w-auto object-contain"
-              />
-            </div>
+            {/* Logo — no white box/background, just the mark on the footer's own background */}
+            <img
+              src={logo}
+              alt="House of Toshali"
+              className="h-16 w-auto object-contain mb-4"
+            />
             <p className="text-sm text-[#6b5940] leading-relaxed mb-4">
               Premium dry fruits, handpicked from the heart of Odisha.
             </p>
 
             {/* License / registration numbers — sit right under the logo & tagline */}
             <div className="flex flex-col gap-1.5">
-              <div className="inline-flex items-center gap-2 text-[11px] font-semibold text-[#3d2a1a] bg-white/70 border border-[#3d2a1a]/10 px-3 py-1.5 rounded-md w-fit">
+              <div className="inline-flex items-center gap-2 text-[11px] font-semibold text-[#3d2a1a] px-0 py-1 rounded-md w-fit">
                 <span className="text-[#B8860B]">FSSAI</span>
                 <span className="text-[#6b5940] font-medium">
                   12026999000089
                 </span>
               </div>
-              <div className="inline-flex items-center gap-2 text-[11px] font-semibold text-[#3d2a1a] bg-white/70 border border-[#3d2a1a]/10 px-3 py-1.5 rounded-md w-fit">
-                <span className="text-[#B8860B]">GSTIN</span>
-                <span className="text-[#6b5940] font-medium">
-                  21XXXXX0000X1Z5
-                </span>
-              </div>
+           
             </div>
           </div>
 
@@ -194,9 +188,9 @@ const Footer = () => {
               Get in Touch
             </h4>
             <p className="text-sm text-[#6b5940] mb-2">
-              support@houseoftoshali.com
+              Support@houseoftoshali.com
             </p>
-            <p className="text-sm text-[#6b5940]">+91 98765 43210</p>
+            <p className="text-sm text-[#6b5940]">+91 9560771457</p>
           </div>
         </div>
 
